@@ -1,0 +1,8 @@
+1.其他的项目工程需要依赖util工具包，所以需要先将util项目Run as Maven Install打包成一个jar包，然后再其他项目中添加pom依赖
+<dependency>
+	<groupId>com.zhou</groupId>
+	<artifactId>util</artifactId>
+	<version>1.0</version>
+</dependency>
+
+2.
