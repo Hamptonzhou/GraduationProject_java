@@ -216,7 +216,7 @@ public class MessageServiceImpl implements IMessageService {
         for (String messageItemRid : rids) {
             MessageItem messageItem = messageInfoDao.findById(messageItemRid).orElse(null);
             //已读的个人消息
-            if (messageItem != null && messageItem.getType() == 2 && messageItem.getMessageStatus() == 1) {
+            if (messageItem != null && messageItem.getType() == 1 && messageItem.getMessageStatus() == 1) {
                 messageInfoDao.deleteById(messageItemRid);
             }
         }
