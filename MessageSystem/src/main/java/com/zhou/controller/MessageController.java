@@ -2,8 +2,6 @@ package com.zhou.controller;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +13,6 @@ import com.zhou.utils.PageQueryData;
 import com.zhou.utils.common.model.Result;
 import com.zhou.utils.common.util.ResultUtil;
 import com.zhou.utils.exception.ArgumentNullException;
-import com.zhou.utils.webservice.WebServiceUtils;
 
 /**
  * 消息处理Controller
@@ -169,8 +166,7 @@ public class MessageController {
      * @Description:
      */
     @RequestMapping("deletePersonalMessage")
-    public Result deletePersonalMessage(HttpServletRequest request, String messageItemRids) {
-        String userId = WebServiceUtils.getCurrentUserId(request);
+    public Result deletePersonalMessage(String userId, String messageItemRids) {
         if (CheckUtil.isNullorEmpty(userId)) {
             throw new ArgumentNullException("userId");
         }
