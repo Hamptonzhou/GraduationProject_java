@@ -26,19 +26,6 @@ public interface IHolidayManagementService {
         String holidayEndtime);
     
     /**
-     * 删除节日，调休日期信息
-     * 
-     * @param title 日期描述
-     * @param dayType 日期类型
-     * @param holidayBegtime 节日和调休开始时间
-     * @param holidayEndtime 节日和调休结束时间
-     * @return
-     * @Description:
-     */
-    public List<Map<String, Object>> deleteHolidayManagement(String title, String dayType, String holidayBegtime,
-        String holidayEndtime);
-    
-    /**
      * 获取指定日期详细信息
      * 
      * @param date 日期

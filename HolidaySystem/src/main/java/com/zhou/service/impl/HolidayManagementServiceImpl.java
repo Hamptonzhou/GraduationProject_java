@@ -21,9 +21,9 @@ import com.zhou.utils.CheckUtil;
  * 
  * @Title:
  * @Description:
- * @Author:hgc
- * @Since:2018年9月11日
- * @Version:1.0.0
+ * @Author:zhou
+ * @Since:2019年1月22日
+ * @Version:1.1.0
  */
 @Service
 public class HolidayManagementServiceImpl implements IHolidayManagementService {
@@ -61,33 +61,27 @@ public class HolidayManagementServiceImpl implements IHolidayManagementService {
                     holidayMap = new HashMap<>(16);
                     definition.setDayType(0);
                     definition.setDayDescribe("正常上班时间");
-                    holidayMap.put("cdate", dayAfter);
-                    holidayMap.put("state", "");
-                } else if ("1".equals(dayType) && isWeekend(dayAfter)) {
-                    holidayMap = new HashMap<>(16);
-                    definition.setDayType(1);
-                    definition.setDayDescribe("周末");
-                    holidayMap.put("cdate", dayAfter);
+                    holidayMap.put("date", dayAfter);
                     holidayMap.put("state", "");
                 } else if ("0".equals(dayType) && isWeekend(dayAfter)) {
                     holidayMap = new HashMap<>(16);
                     definition.setDayType(0);
                     definition.setIsModify(1);
-                    if (CheckUtil.isNullorEmpty(title)) {
-                        title = "调整为上班";
-                    }
                     definition.setDayDescribe(title);
-                    holidayMap.put("cdate", dayAfter);
+                    holidayMap.put("date", dayAfter);
                     holidayMap.put("state", "ban");
+                } else if ("1".equals(dayType) && isWeekend(dayAfter)) {
+                    holidayMap = new HashMap<>(16);
+                    definition.setDayType(1);
+                    definition.setDayDescribe("周末");
+                    holidayMap.put("date", dayAfter);
+                    holidayMap.put("state", "xiu");
                 } else {
                     holidayMap = new HashMap<>(16);
                     definition.setDayType(1);
                     definition.setIsModify(1);
-                    if (CheckUtil.isNullorEmpty(title)) {
-                        title = "调整为放假";
-                    }
                     definition.setDayDescribe(title);
-                    holidayMap.put("cdate", dayAfter);
+                    holidayMap.put("date", dayAfter);
                     holidayMap.put("state", "xiu");
                 }
                 holidayList.add(holidayMap);
@@ -98,54 +92,6 @@ public class HolidayManagementServiceImpl implements IHolidayManagementService {
         return holidayList;
     }
     
-    @Override
-    public List<Map<String, Object>> deleteHolidayManagement(String title, String dayType, String holidayBegtime,
-        String holidayEndtime) {
-        Map<String, Object> holidayMap = null;
-        List<Map<String, Object>> holidayList = new ArrayList<>();
-        
-        List<HolidayDefinition> holidayDefinitions = new ArrayList<HolidayDefinition>();
-        Calendar c = Calendar.getInstance();
-        Date begTime = formateToDate(holidayBegtime);
-        Date endTime = formateToDate(holidayEndtime);
-        HolidayDefinition definition = null;
-        if (begTime != null && endTime != null) {
-            int days = (int)((endTime.getTime() - begTime.getTime()) / (1000 * 3600 * 24)) + 1;
-            
-            c.setTime(begTime);
-            int day = c.get(Calendar.DATE);
-            
-            for (int i = 0; i < days; i++) {
-                definition = new HolidayDefinition();
-                c.set(Calendar.DATE, day + i);
-                
-                String dayAfter = formaateToString(c.getTime());
-                definition.setYearDay(dayAfter);
-                
-                if (isWeekend(dayAfter)) {
-                    holidayMap = new HashMap<>(16);
-                    definition.setDayType(1);
-                    definition.setDayDescribe("周末");
-                    holidayMap.put("cdate", dayAfter);
-                    holidayMap.put("state", "");
-                } else if (!isWeekend(dayAfter)) {
-                    holidayMap = new HashMap<>(16);
-                    definition.setDayType(0);
-                    definition.setDayDescribe("正常上班时间");
-                    holidayMap.put("cdate", dayAfter);
-                    holidayMap.put("state", "");
-                }
-                holidayList.add(holidayMap);
-                holidayDefinitions.add(definition);
-            }
-            holidayService.updateHoliday(holidayDefinitions);
-        }
-        return holidayList;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<Map<String, Object>> getDayDetail(String date) {
         List<HolidayDefinition> holidays = holidayService.getHoliday(formateToDate(date), formateToDate(date));
@@ -158,9 +104,9 @@ public class HolidayManagementServiceImpl implements IHolidayManagementService {
         if (curDayDetail.getDayType() == 1 && !"周末".equals(curDayDetail.getDayDescribe())) {
             holidayMap = new HashMap<>(16);
             getHolidayArea(formateToDate(curDayDetail.getYearDay()), curDayDetail.getDayDescribe(), true);
-            holidayMap.put("cdate", formaateToString(returnDay));
+            holidayMap.put("beginDate", formaateToString(returnDay));
             getHolidayArea(formateToDate(curDayDetail.getYearDay()), curDayDetail.getDayDescribe(), false);
-            holidayMap.put("enddate", formaateToString(returnDay));
+            holidayMap.put("endDate", formaateToString(returnDay));
             holidayMap.put("state", "xiu");
             holidayMap.put("type", curDayDetail.getDayType());
             holidayMap.put("title", curDayDetail.getDayDescribe());
@@ -168,9 +114,9 @@ public class HolidayManagementServiceImpl implements IHolidayManagementService {
         } else if (curDayDetail.getDayType() == 0 && !"正常上班时间".equals(curDayDetail.getDayDescribe())) {
             holidayMap = new HashMap<>(16);
             getHolidayArea(formateToDate(curDayDetail.getYearDay()), curDayDetail.getDayDescribe(), true);
-            holidayMap.put("cdate", formaateToString(returnDay));
+            holidayMap.put("beginDate", formaateToString(returnDay));
             getHolidayArea(formateToDate(curDayDetail.getYearDay()), curDayDetail.getDayDescribe(), false);
-            holidayMap.put("enddate", formaateToString(returnDay));
+            holidayMap.put("endDate", formaateToString(returnDay));
             holidayMap.put("state", "ban");
             holidayMap.put("type", curDayDetail.getDayType());
             holidayMap.put("title", curDayDetail.getDayDescribe());
@@ -182,8 +128,8 @@ public class HolidayManagementServiceImpl implements IHolidayManagementService {
             } else {
                 holidayMap.put("weekend", "0");
             }
-            holidayMap.put("cdate", curDayDetail.getYearDay());
-            holidayMap.put("enddate", curDayDetail.getYearDay());
+            holidayMap.put("beginDate", curDayDetail.getYearDay());
+            holidayMap.put("endDate", curDayDetail.getYearDay());
             holidayMap.put("type", curDayDetail.getDayType());
             holidayList.add(holidayMap);
         }

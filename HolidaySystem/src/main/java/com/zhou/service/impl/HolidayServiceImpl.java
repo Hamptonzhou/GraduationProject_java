@@ -53,27 +53,32 @@ public class HolidayServiceImpl implements IHolidayService {
         } else if (weeks.size() < 7) {
             throw new RuntimeException("周工时定义不全");
         }
-        //根据每年的天数生成记录
+        //循环count年
         List<HolidayDefinition> holidayDefinitions = new ArrayList<>();
-        for (int y = year; y < (count + year); y++) {
-            LocalDate yearDate = LocalDate.now().withYear(y);
-            for (int day = 1; day <= yearDate.lengthOfYear(); day++) {
+        for (int currentYear = year; currentYear < (count + year); currentYear++) {
+            //获取count年的总天数
+            int yearDate = LocalDate.of(currentYear, 1, 1).lengthOfYear();
+            for (int day = 1; day <= yearDate; day++) {
                 HolidayDefinition holidayDefinition = new HolidayDefinition();
-                LocalDate localDate = LocalDate.ofYearDay(y, day);
-                if (this.holidayDefinitionDao.existsById(localDate.toString())
-                    && this.holidayDefinitionDao.findById(localDate.toString()).orElse(null).getIsModify() == 1) {
-                    continue;
-                }
+                //返回年-月-日
+                LocalDate localDate = LocalDate.ofYearDay(currentYear, day);
+                //开始设置日期实体类
                 holidayDefinition.setYearDay(localDate.toString());
-                int dayType = weeks.stream().filter((week) -> {
-                    return week.getWeekName().equals(WeekEnum.getName(localDate.getDayOfWeek().getValue()));
-                }).distinct().findFirst().get().getWorkType();
+                //由当前年-月-日得出星期几
+                String weekName = WeekEnum.getName(localDate.getDayOfWeek().getValue());
+                int dayType = 0;
+                for (WorkHourByWeek week : weeks) {
+                    if (weekName.equals(week.getWeekName())) {
+                        dayType = week.getWorkType();
+                        break;
+                    }
+                }
                 holidayDefinition.setDayType(dayType);
-                holidayDefinition.setDayDescribe(dayType == 0 ? "工作日" : "周末");
+                holidayDefinition.setDayDescribe(dayType == 0 ? "正常上班时间" : "周末");
                 holidayDefinitions.add(holidayDefinition);
             }
         }
-        this.holidayDefinitionDao.saveAll(holidayDefinitions);
+        holidayDefinitionDao.saveAll(holidayDefinitions);
     }
     
     @Override
@@ -172,8 +177,7 @@ public class HolidayServiceImpl implements IHolidayService {
             }
             weekHourDefintion.setWorkHour(hour);
         }
-        this.workHourByWeekDao.saveAll(weeks);
-        
+        workHourByWeekDao.saveAll(weeks);
         resultMap.put("isSuccess", true);
         resultMap.put("msg", "保存成功,可到节假日设置进行初始化。");
         return resultMap;

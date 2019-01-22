@@ -53,6 +53,13 @@ public enum WeekEnum {
         this.name = name;
     }
     
+    /**
+     * 根据数字返回相应的星期名称。
+     * 
+     * @param index
+     * @return the day-of-week, from 1 (Monday) to 7 (Sunday)
+     * @Description:
+     */
     public static String getName(int index) {
         
         switch (index) {

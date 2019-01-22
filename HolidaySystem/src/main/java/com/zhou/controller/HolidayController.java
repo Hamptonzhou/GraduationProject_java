@@ -88,7 +88,7 @@ public class HolidayController {
     }
     
     /**
-     * 新增节假日或调休。把上班时间设置为节假日或调休。
+     * 新增节假日或调休。把上班时间设置为节假日或调休。去掉删除节假日接口，删除节假日也可以使用该接口来实现。删除节假日也就是dayType=1修改为0即可。
      * 
      * @param title
      * @param dayType
@@ -101,23 +101,6 @@ public class HolidayController {
     public Result saveOrUpdateHoliday(String title, String dayType, String holidayBegtime, String holidayEndtime) {
         List<Map<String, Object>> holidayList =
             holidayManagementService.saveHolidayManagement(title, dayType, holidayBegtime, holidayEndtime);
-        return ResultUtil.success(holidayList);
-    }
-    
-    /**
-     * 删除节假日或调休。把节假日或调休设置为正常上班时间。
-     * 
-     * @param title
-     * @param dayType
-     * @param holidayBegtime 节日和调休开始时间
-     * @param holidayEndtime 节日和调休结束时间
-     * @return
-     * @Description:
-     */
-    @RequestMapping("/deleteHoliday")
-    public Result deleteHoliday(String title, String dayType, String holidayBegtime, String holidayEndtime) {
-        List<Map<String, Object>> holidayList =
-            holidayManagementService.deleteHolidayManagement(title, dayType, holidayBegtime, holidayEndtime);
         return ResultUtil.success(holidayList);
     }
     
