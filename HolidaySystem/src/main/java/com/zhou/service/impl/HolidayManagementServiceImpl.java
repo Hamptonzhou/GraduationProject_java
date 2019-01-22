@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.zhou.entity.HolidayDefinition;
 import com.zhou.service.IHolidayManagementService;
 import com.zhou.service.IHolidayService;
-import com.zhou.utils.CheckUtil;
 
 /**
  * 
@@ -226,5 +225,28 @@ public class HolidayManagementServiceImpl implements IHolidayManagementService {
             calendar.add(Calendar.DATE, 1);
             returnDay = calendar.getTime();
         }
+    }
+    
+    @Override
+    public List<Map<String, Object>> getHolidays(String stDate, String enDate) {
+        Map<String, Object> holidayMap;
+        List<Map<String, Object>> holidayList = new ArrayList<>();
+        List<HolidayDefinition> holidays = holidayService.getHoliday(formateToDate(stDate), formateToDate(enDate));
+        for (HolidayDefinition holidayDefinition : holidays) {
+            if (holidayDefinition.getDayType() == 1 && !"周末".equals(holidayDefinition.getDayDescribe())) {
+                holidayMap = new HashMap<>(16);
+                holidayMap.put("cdate", holidayDefinition.getYearDay());
+                holidayMap.put("state", "xiu");
+                holidayMap.put("title", holidayDefinition.getDayDescribe());
+                holidayList.add(holidayMap);
+            } else if (holidayDefinition.getDayType() == 0 && !"正常上班时间".equals(holidayDefinition.getDayDescribe())) {
+                holidayMap = new HashMap<>(16);
+                holidayMap.put("cdate", holidayDefinition.getYearDay());
+                holidayMap.put("state", "ban");
+                holidayMap.put("title", holidayDefinition.getDayDescribe());
+                holidayList.add(holidayMap);
+            }
+        }
+        return holidayList;
     }
 }

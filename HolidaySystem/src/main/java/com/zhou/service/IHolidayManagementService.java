@@ -32,4 +32,13 @@ public interface IHolidayManagementService {
      * @return
      */
     public List<Map<String, Object>> getDayDetail(String date);
+    
+    /**
+     * 获取某时间段节日，调休日期信息
+     * 
+     * @param stDate 节日和调休开始时间
+     * @param enDate 节日和调休结束时间
+     * @return 节日和调休日期信息的Map集合
+     */
+    public List<Map<String, Object>> getHolidays(String stDate, String enDate);
 }

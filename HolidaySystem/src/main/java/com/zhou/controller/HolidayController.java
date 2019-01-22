@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -115,6 +117,19 @@ public class HolidayController {
     public Result getDayDetail(String date) {
         List<Map<String, Object>> dayDetail = holidayManagementService.getDayDetail(date);
         return ResultUtil.success(dayDetail);
+    }
+    
+    /**
+     * 获取经过初始化年份的所有节假日
+     * 
+     * @param request
+     * @return
+     * @Description:
+     */
+    @RequestMapping("/getFestival")
+    public Result getFestival() {
+        List<Map<String, Object>> holidayList = holidayManagementService.getHolidays("1970-01-01", "2050-12-31");
+        return ResultUtil.success(holidayList);
     }
     
 }
