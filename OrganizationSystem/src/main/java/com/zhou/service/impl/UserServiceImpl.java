@@ -68,4 +68,14 @@ public class UserServiceImpl implements IUserService {
             userDao.save(user);
         }
     }
+    
+    @Override
+    public boolean checkLoginNameExist(String loginName) {
+        int count = userDao.countByLoginName(loginName);
+        if (count == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

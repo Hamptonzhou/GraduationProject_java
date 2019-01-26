@@ -91,4 +91,17 @@ public class UserController {
         userService.assignDepartmentByUserIds(ids, parentId);
         return ResultUtil.success();
     }
+    
+    /**
+     * 检查登陆账号是否存在
+     * 
+     * @param loginName 登陆账号
+     * @return
+     * @Description:
+     */
+    @RequestMapping("checkLoginNameExist")
+    public Result checkLoginNameExist(String loginName) {
+        boolean isExist = userService.checkLoginNameExist(loginName);
+        return ResultUtil.success(isExist);
+    }
 }

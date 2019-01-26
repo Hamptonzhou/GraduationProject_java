@@ -61,4 +61,13 @@ public interface IUserDao extends JpaRepository<UserInfo, String> {
     @Query("select count(*) from UserInfo u where (u.loginName like :searchText) or (u.realName like :searchText)")
     int countByLoginNameOrRealNameLike(String searchText);
     
+    /**
+     * 检查登陆账号是否存在
+     * 
+     * @param loginName 登陆账号
+     * @return
+     * @Description:
+     */
+    int countByLoginName(String loginName);
+    
 }

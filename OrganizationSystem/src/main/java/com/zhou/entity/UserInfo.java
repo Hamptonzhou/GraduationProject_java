@@ -82,7 +82,7 @@ public class UserInfo implements Serializable {
     /**
      * 身份证号码
      */
-    @Column(name = "identity_number", length = 20)
+    @Column(name = "identity_number", length = 20, nullable = false)
     private String identityNumber;
     
     /**

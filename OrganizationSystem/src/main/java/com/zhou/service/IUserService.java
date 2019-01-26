@@ -59,4 +59,13 @@ public interface IUserService {
      * @Description:
      */
     void assignDepartmentByUserIds(String[] ids, String parentId);
+    
+    /**
+     * 检查登陆账号是否存在
+     * 
+     * @param loginName 登陆账号
+     * @return
+     * @Description:
+     */
+    boolean checkLoginNameExist(String loginName);
 }
