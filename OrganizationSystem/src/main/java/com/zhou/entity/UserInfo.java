@@ -118,14 +118,14 @@ public class UserInfo implements Serializable {
     /**
      * 注册时间.
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "register_time", length = 30)
     private Date registerTime;
     
     /**
      * 入职时间.
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "join_time")
     private Date joinTime;
     
