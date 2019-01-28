@@ -31,7 +31,7 @@ public class DepartmentController {
      * 获取完整的组织机构树：部门---岗位
      * 
      * @return
-     * @Description:
+     * @Description:如果使用异步加载组织结构树，则该接口冗余。改而使用getDepartmentList接口
      */
     @RequestMapping("/getDepartmentTree")
     public Result getDepartmentTree() {
@@ -63,5 +63,17 @@ public class DepartmentController {
     public Result deleteDepartment(String id) {
         departmentService.deleteDepartment(id);
         return ResultUtil.success();
+    }
+    
+    /**
+     * 获取部门名称列表，用于添加岗位时，可以使用下拉框选择
+     * 
+     * @return
+     * @Description:
+     */
+    @RequestMapping("/getDepartmentList")
+    public Result getDepartmentList(String parentId) {
+        List<DepartmentInfo> DepartmentList = departmentService.getDepartmentList(parentId);
+        return ResultUtil.success(DepartmentList);
     }
 }

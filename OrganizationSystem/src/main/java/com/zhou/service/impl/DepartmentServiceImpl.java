@@ -50,4 +50,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
             departmentDao.deleteById(id);
         }
     }
+    
+    @Override
+    public List<DepartmentInfo> getDepartmentList(String parentId) {
+        return departmentDao.findByParentId(parentId);
+    }
 }

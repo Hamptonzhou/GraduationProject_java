@@ -39,4 +39,12 @@ public interface IDepartmentService {
      */
     void deleteDepartment(String id);
     
+    /**
+     * 获取部门名称列表，用于添加岗位时，可以使用下拉框选择
+     * 
+     * @return
+     * @Description parentId='#'的记录代表部门
+     */
+    List<DepartmentInfo> getDepartmentList(String parentId);
+    
 }

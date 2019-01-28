@@ -17,12 +17,12 @@ import com.zhou.entity.DepartmentInfo;
  */
 public interface IDepartmentDao extends JpaRepository<DepartmentInfo, String> {
     /**
-     * 根据parentId查询父级
+     * 根据parentId返回部门列表
      * 
      * @param id
      * @return
-     * @Description:
+     * @Description:如果传递parentId等于#，则返回所有的部门列表。如果parentId不等于#,则返回所有parentId等于知道id的所有记录的列表
      */
-    List<DepartmentInfo> findByParentId(String id);
+    List<DepartmentInfo> findByParentId(String parentId);
     
 }
