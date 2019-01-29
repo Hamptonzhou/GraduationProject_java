@@ -49,7 +49,7 @@ public class MessageController {
     }
     
     /**
-     * 根据当前用户的userId获取用户的未读消息，包括获取个人消息和广播消息。
+     * 根据当前用户的userId获取用户的个人未读消息。
      * 
      * @param request
      * @return
@@ -68,6 +68,95 @@ public class MessageController {
     }
     
     /**
+     * 获取已读的个人消息
+     * 
+     * @param pageQueryData
+     * @return
+     * @Description:
+     */
+    @RequestMapping("listReadedMessage")
+    public Result listReadedMessage(PageQueryData<MessageItem> pageQueryData) {
+        //获取当前用户ID
+        String userId = pageQueryData.getQueryId();
+        if (CheckUtil.isNullorEmpty(userId)) {
+            throw new ArgumentNullException("userId");
+        }
+        //获取当前用户已读的个人消息
+        messageService.listReadedMessageByReceiverId(pageQueryData);
+        return ResultUtil.success(pageQueryData.getResult());
+    }
+    
+    /**
+     * 获取所有的广播消息
+     * 
+     * @param pageQueryData
+     * @return
+     * @Description:
+     */
+    @RequestMapping("listBroadcastMessage")
+    public Result listBroadcastMessage(PageQueryData<MessageItem> pageQueryData) {
+        //获取所有的广播消息
+        messageService.listBroadcastMessage(pageQueryData);
+        return ResultUtil.success(pageQueryData.getResult());
+    }
+    
+    /**
+     * 获取所有的已删除的消息，即删除标识为1
+     * 
+     * @param pageQueryData
+     * @return
+     * @Description:
+     */
+    @RequestMapping("listTrashMessage")
+    public Result listTrashMessage(PageQueryData<MessageItem> pageQueryData) {
+        //获取当前用户ID
+        String userId = pageQueryData.getQueryId();
+        if (CheckUtil.isNullorEmpty(userId)) {
+            throw new ArgumentNullException("userId");
+        }
+        //获取所有的广播消息
+        messageService.listTrashMessage(pageQueryData);
+        return ResultUtil.success(pageQueryData.getResult());
+    }
+    
+    /**
+     * 根据消息id和消息类型删除已读消息，标志已删除，放入回收站，等待定时任务删除
+     * 
+     * @param request
+     * @param messageItemRid 消息id
+     * @param messageItemType
+     * @Description:
+     */
+    @RequestMapping("deletePersonalMessage")
+    public Result deletePersonalMessage(String userId, String messageItemRids) {
+        if (CheckUtil.isNullorEmpty(userId)) {
+            throw new ArgumentNullException("userId");
+        }
+        //删除消息
+        messageService.deletePersonalMessage(messageItemRids);
+        return ResultUtil.success();
+    }
+    
+    /**
+     * 根据消息id返回消息实体
+     * 
+     * @param request
+     * @param messageItemRid
+     * @return
+     * @Description:
+     */
+    @RequestMapping("getContentByMsgId")
+    public Result getContentByMsgId(String userId, String messageItemIds) {
+        //获取当前用户ID
+        if (CheckUtil.isNullorEmpty(userId)) {
+            throw new ArgumentNullException("userId");
+        }
+        //获取当前用户未读消息
+        MessageItem messageItem = messageService.readMessageById(userId, messageItemIds);
+        return ResultUtil.success(messageItem);
+    }
+    
+    /**
      * 读取消息内容，并把消息状态设置成已读
      * 
      * @param request
@@ -75,14 +164,14 @@ public class MessageController {
      * @return
      * @Description:
      */
-    @RequestMapping("readMessage")
-    public Result readMessage(String userId, String messageItemIds) {
+    @RequestMapping("setHasRead")
+    public Result setHasRead(String userId, String messageItemIds) {
         //获取当前用户ID
         if (CheckUtil.isNullorEmpty(userId)) {
             throw new ArgumentNullException("userId");
         }
         //获取当前用户未读消息
-        MessageItem messageItem = messageService.readMessageById(userId, messageItemIds);
+        MessageItem messageItem = messageService.setHasRead(userId, messageItemIds);
         return ResultUtil.success(messageItem);
     }
     
@@ -154,24 +243,5 @@ public class MessageController {
         //获取所有由用户已发送的消息
         messageService.listSentMessage(pageQueryData);
         return ResultUtil.success(pageQueryData.getResult());
-    }
-    
-    /**
-     * 根据消息id和消息类型删除已读消息
-     * 
-     * @param request
-     * @param messageItemRid 消息id
-     * @param messageItemType
-     *        消息类型：2-个人消息，0-广播消息，messageItemType必须等于2,并且状态为已读才能删除
-     * @Description:
-     */
-    @RequestMapping("deletePersonalMessage")
-    public Result deletePersonalMessage(String userId, String messageItemRids) {
-        if (CheckUtil.isNullorEmpty(userId)) {
-            throw new ArgumentNullException("userId");
-        }
-        //删除消息
-        messageService.deletePersonalMessage(messageItemRids);
-        return ResultUtil.success();
     }
 }
