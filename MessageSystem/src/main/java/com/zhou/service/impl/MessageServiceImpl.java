@@ -57,10 +57,72 @@ public class MessageServiceImpl implements IMessageService {
         Pageable pageable = this.setPageableObject(pageQueryData);
         //获取未读消息总数
         int total = messageInfoDao.countUnreadMessage(userId);
-        //获取未读消息信息，包括个人消息和广播消息
+        //获取未读消息信息，包括个人消息
         List<MessageItem> mesagItemList = messageInfoDao.findUnreadMessageByReceiverId(userId, pageable);
         pageQueryData.setTotal(total);
         pageQueryData.setQueryList(mesagItemList);
+    }
+    
+    /**
+     * 获取所有已读的个人消息
+     */
+    @Override
+    public void listReadedMessageByReceiverId(PageQueryData<MessageItem> pageQueryData) {
+        String userId = pageQueryData.getQueryId();
+        //设置分页对象
+        Pageable pageable = this.setPageableObject(pageQueryData);
+        //获取已读消息总数
+        int total = this.countReadedMessage(userId);
+        //获取已读消息列表，包括个人消息
+        List<MessageItem> mesagItemList = messageInfoDao.findReadedMessageByReceiverId(userId, pageable);
+        pageQueryData.setTotal(total);
+        pageQueryData.setQueryList(mesagItemList);
+        
+    }
+    
+    /**
+     * 获取所有广播消息
+     */
+    @Override
+    public void listBroadcastMessage(PageQueryData<MessageItem> pageQueryData) {
+        //设置分页对象
+        Pageable pageable = this.setPageableObject(pageQueryData);
+        //获取广播消息的总数
+        int total = messageInfoDao.countBroadcastdMessage();
+        List<MessageItem> mesagItemList = messageInfoDao.findBroadcastMessage();
+        pageQueryData.setTotal(total);
+        pageQueryData.setQueryList(mesagItemList);
+        
+    }
+    
+    /**
+     * 获取当前用户删除的消息，删除标志为1
+     */
+    @Override
+    public void listTrashMessage(PageQueryData<MessageItem> pageQueryData) {
+        String userId = pageQueryData.getQueryId();
+        //设置分页对象
+        Pageable pageable = this.setPageableObject(pageQueryData);
+        //获取广播消息的总数
+        int total = messageInfoDao.countTrashMessage(userId);
+        List<MessageItem> mesagItemList = messageInfoDao.findTrashMessage(userId, pageable);
+        pageQueryData.setTotal(total);
+        pageQueryData.setQueryList(mesagItemList);
+    }
+    
+    /**
+     * 修改已删除标志，放入回收站
+     */
+    @Override
+    @Transactional
+    public void deletePersonalMessage(String messageItemRids) {
+        //messageInfoDao.deleteInBatch(null);
+        MessageItem messageItem = messageInfoDao.findById(messageItemRids).orElse(null);
+        if (messageItem != null && messageItem.getType() == 1 && messageItem.getMessageStatus() == 1) {
+            //设置已删除标志，放入回收站
+            messageItem.setIsDelete(1);
+            messageInfoDao.save(messageItem);
+        }
     }
     
     /**
@@ -78,11 +140,16 @@ public class MessageServiceImpl implements IMessageService {
         return pageable;
     }
     
+    @Override
+    public MessageItem readMessageById(String userId, String messageItemIds) {
+        return messageInfoDao.findById(messageItemIds).orElse(null);
+    }
+    
     /**
      * 读取消息内容，并且修改消息状态
      */
     @Override
-    public MessageItem readMessageById(String userId, String messageItemIds) {
+    public MessageItem setHasRead(String userId, String messageItemIds) {
         List<String> rids = Arrays.asList(messageItemIds.split(","));
         MessageItem messageItem = null;
         for (String messageItemRid : rids) {
@@ -139,6 +206,8 @@ public class MessageServiceImpl implements IMessageService {
     @Override
     public void sendMessageToAll(MessageItem messageItem)
         throws IOException {
+        messageItem.setReceiverId("#");
+        messageItem.setReceiverName("#");
         messageInfoDao.save(messageItem);
         MessageItem newMessageItem = new MessageItem();
         BeanUtils.copyProperties(messageItem, newMessageItem);
@@ -206,23 +275,6 @@ public class MessageServiceImpl implements IMessageService {
     }
     
     /**
-     * 只允许删除已读的个人消息，messageType == 2表示个人消息，messageStatus == 1表示已读
-     */
-    @Override
-    @Transactional
-    public void deletePersonalMessage(String messageItemRids) {
-        List<String> rids = Arrays.asList(messageItemRids.split(","));
-        //messageInfoDao.deleteInBatch(null);
-        for (String messageItemRid : rids) {
-            MessageItem messageItem = messageInfoDao.findById(messageItemRid).orElse(null);
-            //已读的个人消息
-            if (messageItem != null && messageItem.getType() == 1 && messageItem.getMessageStatus() == 1) {
-                messageInfoDao.deleteById(messageItemRid);
-            }
-        }
-    }
-    
-    /**
      * 检查该用户是否有未读的广播消息，如果存在，则新增一条消息记录。
      * 
      * 存在用户从未上线的情况，则该用户从未没有接收过广播消息，所以无法获取用户最后接收广播的时间进行比较，所以为其新增1970年之后的所有广播消息记录。
@@ -251,4 +303,5 @@ public class MessageServiceImpl implements IMessageService {
             }
         }
     }
+    
 }

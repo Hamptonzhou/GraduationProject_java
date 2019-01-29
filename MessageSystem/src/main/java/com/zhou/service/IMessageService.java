@@ -44,6 +44,38 @@ public interface IMessageService {
     void listUnreadMessageByReceiverId(PageQueryData<MessageItem> pageQueryData);
     
     /**
+     * 获取已读的个人消息
+     * 
+     * @param pageQueryData 分页对象，里面包含了userId属性记录ReceiverId
+     * @Description:
+     */
+    void listReadedMessageByReceiverId(PageQueryData<MessageItem> pageQueryData);
+    
+    /**
+     * 获取所有的广播消息
+     * 
+     * @param pageQueryData
+     * @Description:
+     */
+    void listBroadcastMessage(PageQueryData<MessageItem> pageQueryData);
+    
+    /**
+     * 获取所有删除标记为1的消息
+     * 
+     * @param pageQueryData
+     * @Description:
+     */
+    void listTrashMessage(PageQueryData<MessageItem> pageQueryData);
+    
+    /**
+     * 根据消息id和消息类型删除已读消息
+     * 
+     * @param messageItemRids 消息主键
+     * @Description:
+     */
+    void deletePersonalMessage(String messageItemRids);
+    
+    /**
      * 获取指定消息的详细信息
      * 
      * @param userId
@@ -51,7 +83,7 @@ public interface IMessageService {
      * @return
      * @Description:
      */
-    MessageItem readMessageById(String userId, String messageItemIds);
+    MessageItem setHasRead(String userId, String messageItemIds);
     
     /**
      * 给指定用户发送消息
@@ -72,14 +104,6 @@ public interface IMessageService {
      */
     void sendMessageToAll(MessageItem messageItem)
         throws IOException;
-    
-    /**
-     * 根据消息id和消息类型删除已读消息
-     * 
-     * @param messageItemRids 消息主键
-     * @Description:
-     */
-    void deletePersonalMessage(String messageItemRids);
     
     /**
      * 获取当前用户的所有历史消息，包括已读消息和未读消息
@@ -106,5 +130,15 @@ public interface IMessageService {
      */
     void checkUnreadBroadcastMessage(String userId)
         throws ParseException;
+    
+    /**
+     * 根据消息id返回消息实体
+     * 
+     * @param userId
+     * @param messageItemIds
+     * @return
+     * @Description:
+     */
+    MessageItem readMessageById(String userId, String messageItemIds);
     
 }

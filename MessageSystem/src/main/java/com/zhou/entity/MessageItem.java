@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 
@@ -53,6 +54,7 @@ public class MessageItem {
      * 消息发送时间
      */
     @Column(name = "send_time", length = 30)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss" )
     private Date sendTime;
     
     /**
@@ -90,5 +92,11 @@ public class MessageItem {
      */
     @Column(name = "type")
     private int type;
+    
+    /**
+     * 是否删除。0---未被删除，1---已被删除，用于区别哪些消息在回收站中
+     */
+    @Column(name = "is_delete")
+    private int isDelete;
     
 }

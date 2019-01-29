@@ -23,7 +23,7 @@ import com.zhou.entity.MessageItem;
 public interface IMessageInfoDao extends JpaRepository<MessageItem, String> {
     
     /**
-     * 获取未读消息总数
+     * 获取个人未读消息总数
      * 
      * @param userId
      * @return
@@ -33,7 +33,7 @@ public interface IMessageInfoDao extends JpaRepository<MessageItem, String> {
     public int countUnreadMessage(String userId);
     
     /**
-     * 根据当前用户Id，查询当前用户未读的个人消息和广播消息.
+     * 根据当前用户Id，查询当前用户未读的个人消息
      * 
      * @param userId
      * @param pageable 分页对象
@@ -51,7 +51,66 @@ public interface IMessageInfoDao extends JpaRepository<MessageItem, String> {
      */
     @Query(value = "select count(*) from MessageItem m where m.receiverId = :userId and m.messageStatus = 1 order by m.sendTime desc")
     public int countReadedMessage(String userId);
+
+    /**
+     * 查询所有已读的个人消息
+     * 
+     * @param userId
+     * @param pageable
+     * @return
+     * @Description:
+     */
+    @Query(value = "from MessageItem m where m.receiverId = :userId and m.messageStatus = 1 and m.isDelete = 0 order by m.sendTime DESC")
+    public List<MessageItem> findReadedMessageByReceiverId(String userId, Pageable pageable);
     
+    /**
+     * 获取广播消息的总数
+     * 
+     * @return
+     * @Description:
+     */
+    @Query(value = "select count(*) from MessageItem m where m.receiverId = '#' and m.type = 0 order by m.sendTime desc")
+    public int countBroadcastdMessage();
+
+    /**
+     * 获取所有广播消息列表
+     * 
+     * @return
+     * @Description:
+     */
+    @Query(value = "from MessageItem m where m.receiverId = '#' and m.type = 0 order by m.sendTime desc")
+    public List<MessageItem> findBroadcastMessage();
+
+    /**
+     * 获取已删除消息的总数
+     * 
+     * @param userId
+     * @return
+     * @Description:
+     */
+    @Query(value = "select count(*) from MessageItem m where m.receiverId = :userId and m.isDelete = 1 order by m.sendTime desc")
+    public int countTrashMessage(String userId);
+
+    /**
+     * 获取已删除的消息列表
+     * 
+     * @param userId
+     * @param pageable
+     * @return
+     * @Description:
+     */
+    @Query(value = "from MessageItem m where m.receiverId = :userId and m.isDelete = 1 order by m.sendTime desc")
+    public List<MessageItem> findTrashMessage(String userId, Pageable pageable);
+
+    /**
+     * 根据消息id和消息类型删除已读消息
+     * 
+     * @param messageItemRid
+     * @param messageItemType
+     * @Description:
+     */
+    public void deleteByIdAndType(String messageItemId, Integer messageItemType);
+
     /**
      * 获取当前用户的所有已读消息，包括已读消息和未读消息
      * 
@@ -62,15 +121,6 @@ public interface IMessageInfoDao extends JpaRepository<MessageItem, String> {
      */
     @Query(value = "from MessageItem m where m.receiverId = :userId order by m.sendTime desc")
     public List<MessageItem> getAllMessageByReceiverId(String userId, Pageable pageable);
-    
-    /**
-     * 根据消息id和消息类型删除已读消息
-     * 
-     * @param messageItemRid
-     * @param messageItemType
-     * @Description:
-     */
-    public void deleteByIdAndType(String messageItemId, Integer messageItemType);
     
     /**
      * 获取发送者为该用户id的所有消息
@@ -112,4 +162,5 @@ public interface IMessageInfoDao extends JpaRepository<MessageItem, String> {
      */
     @Query(value = "select MAX(mm.sendTime) from MessageItem mm where mm.receiverId = :userId and mm.type = 0 ")
     public Date findLatestBoracastTime(String userId);
+    
 }
