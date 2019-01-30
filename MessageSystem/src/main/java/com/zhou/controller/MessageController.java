@@ -120,24 +120,6 @@ public class MessageController {
     }
     
     /**
-     * 根据消息id和消息类型删除已读消息，标志已删除，放入回收站，等待定时任务删除
-     * 
-     * @param request
-     * @param messageItemRid 消息id
-     * @param messageItemType
-     * @Description:
-     */
-    @RequestMapping("deletePersonalMessage")
-    public Result deletePersonalMessage(String userId, String messageItemRids) {
-        if (CheckUtil.isNullorEmpty(userId)) {
-            throw new ArgumentNullException("userId");
-        }
-        //删除消息
-        messageService.deletePersonalMessage(messageItemRids);
-        return ResultUtil.success();
-    }
-    
-    /**
      * 根据消息id返回消息实体
      * 
      * @param request
@@ -151,7 +133,7 @@ public class MessageController {
         if (CheckUtil.isNullorEmpty(userId)) {
             throw new ArgumentNullException("userId");
         }
-        //获取当前用户未读消息
+        //获取指定消息
         MessageItem messageItem = messageService.readMessageById(userId, messageItemIds);
         return ResultUtil.success(messageItem);
     }
@@ -170,9 +152,45 @@ public class MessageController {
         if (CheckUtil.isNullorEmpty(userId)) {
             throw new ArgumentNullException("userId");
         }
-        //获取当前用户未读消息
+        //把对应的消息记录设消息状态字段设置成已读
         MessageItem messageItem = messageService.setHasRead(userId, messageItemIds);
         return ResultUtil.success(messageItem);
+    }
+    
+    /**
+     * 根据消息id修改删除标志为1，放入回收站，等待定时任务删除
+     * 
+     * @param request
+     * @param messageItemRid 消息id
+     * @param messageItemType
+     * @Description:
+     */
+    @RequestMapping("deletePersonalMessage")
+    public Result deletePersonalMessage(String userId, String messageItemIds) {
+        if (CheckUtil.isNullorEmpty(userId)) {
+            throw new ArgumentNullException("userId");
+        }
+        //删除消息
+        messageService.deletePersonalMessage(messageItemIds);
+        return ResultUtil.success();
+    }
+    
+    /**
+     * 根据消息id修改删除标志为0，从回收站状态返回到已读状态
+     * 
+     * @param request
+     * @param messageItemRid 消息id
+     * @param messageItemType
+     * @Description:
+     */
+    @RequestMapping("restoreDeleteMessage")
+    public Result restoreDeleteMessage(String userId, String messageItemIds) {
+        if (CheckUtil.isNullorEmpty(userId)) {
+            throw new ArgumentNullException("userId");
+        }
+        //还原消息
+        messageService.restoreDeleteMessage(messageItemIds);
+        return ResultUtil.success();
     }
     
     /**
@@ -202,9 +220,9 @@ public class MessageController {
     @RequestMapping("sendMessageToAll")
     public Result sendMessageToAll(MessageItem messageItem)
         throws IOException {
-        if (!"#".equals(messageItem.getReceiverId())) {
-            throw new IllegalArgumentException("广播消息的接收人必须等于#");
-        }
+//        if (!"#".equals(messageItem.getReceiverId())) {
+//            throw new IllegalArgumentException("广播消息的接收人必须等于#");
+//        }
         messageService.sendMessageToAll(messageItem);
         return ResultUtil.success();
     }

@@ -111,7 +111,7 @@ public class MessageServiceImpl implements IMessageService {
     }
     
     /**
-     * 修改已删除标志，放入回收站
+     * 将消息放入回收站，修改删除标志为1即可
      */
     @Override
     @Transactional
@@ -121,6 +121,24 @@ public class MessageServiceImpl implements IMessageService {
         if (messageItem != null && messageItem.getType() == 1 && messageItem.getMessageStatus() == 1) {
             //设置已删除标志，放入回收站
             messageItem.setIsDelete(1);
+            messageInfoDao.save(messageItem);
+        }
+    }
+    
+    /**
+     * 将消息从回收站还原到已读消息，修改删除标志为0即可
+     */
+    @Override
+    @Transactional
+    public void restoreDeleteMessage(String messageItemRids) {
+        MessageItem messageItem = messageInfoDao.findById(messageItemRids).orElse(null);
+        //检查消息存在，并且消息类型为个人消息
+        boolean firstCheck = messageItem != null && messageItem.getType() == 1;
+        //检查消息为已读，并且删除表示为1(表示在回收站)
+        boolean secondCheck = messageItem.getMessageStatus() == 1 && messageItem.getIsDelete() == 1;
+        if (firstCheck && secondCheck) {
+            //设置删除标志，从回收站返回至已读消息
+            messageItem.setIsDelete(0);
             messageInfoDao.save(messageItem);
         }
     }
@@ -209,23 +227,26 @@ public class MessageServiceImpl implements IMessageService {
         messageItem.setReceiverId("#");
         messageItem.setReceiverName("#");
         messageInfoDao.save(messageItem);
-        MessageItem newMessageItem = new MessageItem();
-        BeanUtils.copyProperties(messageItem, newMessageItem);
+//        MessageItem newMessageItem = new MessageItem();
+//        BeanUtils.copyProperties(messageItem, newMessageItem);
         //获取所有在线用户
         Set<String> onlineUserIdSet = sessionContainer.getOnlineUserSet();
         for (String userId : onlineUserIdSet) {
             List<WebSocketSession> sessionlist = sessionContainer.getSessionListByUserId(userId);
             for (WebSocketSession session : sessionlist) {
-                session.sendMessage(new TextMessage(JSON.toJSONString(newMessageItem)));
+                session.sendMessage(new TextMessage(JSON.toJSONString(messageItem)));
             }
-            //修改消息状态为已读，并入库
-            newMessageItem.setMessageStatus(1);
-            newMessageItem.setReceiverId(userId);
-            messageInfoDao.save(newMessageItem);
+//            //修改消息状态为已读，并入库
+//            newMessageItem.setMessageStatus(1);
+//            newMessageItem.setReceiverId(userId);
+//            messageInfoDao.save(newMessageItem);
         }
         //对于离线用户
         //处理方式一：获取所有用户的用户id，遍历排除在线的用户，然后为每个用户新增一条接收人为该用户id，状态为未读的消息记录
         //处理方式二：在用户上线的时候查询未读的广播消息，当存在未读的广播消息时，新增一条接收人为该用户，消息为未读的消息记录
+        
+        //毕设的处理方案:
+        //广播消息记录只在数据库存在一条，存在于每个用户的广播列表，不允许删除，没有设置已读等功能！
     }
     
     /**

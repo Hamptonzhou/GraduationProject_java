@@ -141,4 +141,12 @@ public interface IMessageService {
      */
     MessageItem readMessageById(String userId, String messageItemIds);
     
+    /**
+     * 将消息从回收站还原到已读消息，修改删除标志为0即可
+     * 
+     * @param messageItemRids
+     * @Description:
+     */
+    void restoreDeleteMessage(String messageItemRids);
+    
 }
