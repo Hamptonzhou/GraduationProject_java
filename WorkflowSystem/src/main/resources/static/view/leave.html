@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>请假申请测试</title>
+ <style type="text/css" >
+   .input{
+   	margin: 10px;
+   }
+   table td {
+   	padding: 10px 50px;
+   }
+ </style>
+  
+</head>
+<body>
+
+<div>
+	<div>=============配置模型=================</div>
+	<div class="input"><button onclick="newModel()" >新建模型</button> </div>
+	<div class="input">模型id：<input id = "modelId" type="text"  ></div>
+	<div class="input"><button onclick="editModel()" >编辑模型</button> </div>
+	<div class="input"><button onclick="deployProcess()" >部署流程</button> </div>
+	<div class="input">流程定义id：<input id = "processDefinitionKey" type="text" ></div>
+</div>
+
+	<div>
+		<div>=============发起流程=================</div>
+		<form id="startProcessFrom" action=""></form>
+		<div class="input">开始时间：<input id = "startTime" type="datetime"></div>
+		<div class="input">结束时间：<input id = "endTime" type="datetime"></div>
+		<div class="input">请假类型：<input id = "leaveType" type="text"></div>
+		<div class="input">请假原因：<input id = "reason" type="text"></div>
+		<!-- <div class="input">处理人id：<input id = "userId" type="text" value="tijs" disabled="disabled"></div>
+		<div class="input">流程定义id：<input id = "leaveProcess" type="text" value="leaveProcess" ></div> -->
+		<div class="input"><button onclick="startProcess()" >发起流程</button> </div>
+	</div>
+	
+	<div>
+		<button onclick="refleshAllTable()" >刷新列表</button>
+		<div>============= tijs 处理列表 ================= </div>
+		<table id="table1">
+			<tr>
+				<td>流程实例</td>
+				<td>请假类型</td>
+				<td>请假原因</td>
+				<td>环节名称</td>
+				<td>taskId</td>
+				<td>操作</td>
+			</tr>
+		</table>
+		 
+	</div>
+	
+	<div>
+		<div>============= kermit 处理列表 ================= </div>
+		<table id="table2">
+			<tr>
+				<td>流程实例</td>
+				<td>请假类型</td>
+				<td>请假原因</td>
+				<td>环节名称</td>
+				<td>taskId</td>
+				<td>操作</td>
+			</tr>
+		</table>
+		 
+	</div>
+	
+	<div>
+		<div>============消息记录=========================</div>
+		<div id="connect-container">
+			<!-- <div>
+				<input id="target" type="text" size="40" style="width: 350px" value="/webSocket"/>
+			</div>
+			<div>
+				<button id="connect" onclick="connect();">Connect</button>
+				<button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+			</div> -->
+			<!-- <div>
+				<textarea id="console" style="width: 500px;height: 300px;">Here is a message!</textarea>
+			</div> -->
+			<!-- <div>
+				<button id="reverse" onclick="reverse();" disabled="disabled">Reverse message</button>
+			</div> -->
+		</div>
+		<div id="console-container">
+			<div id="console"></div>
+		</div>
+	</div>
+
+	
+</body>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+
+$(function (){
+	refleshAllTable();
+// 	connect();
+});
+
+function newModel(){
+	$.post( '/model/new',
+			function (result){
+				if(result.status==0){
+					var modelId = result.data.modelId;
+					var redirect = result.data.redirect;
+					$("#modelId").val(modelId);
+					window.open(redirect); //打开新窗口    
+				}
+			}
+	);
+}
+
+function editModel(){
+	var modelId = $("#modelId").val();
+	var redirect='http://' + window.location.host +"/modeler.html?modelId="+modelId;
+	window.open(redirect); //打开新窗口   
+}
+
+function deployProcess(){
+	var modelId=$("#modelId").val();
+	$.post( '/model/'+modelId+'/deployment',
+			function (result){
+				if(result.status==0){
+					var processDefinitionKey = result.data;
+					$("#processDefinitionKey").val(processDefinitionKey);
+				}
+			}
+	);
+}
+
+function startProcess(){
+	var startTime = $("#startTime").val();
+	var endTime = $("#endTime").val();
+	var leaveType = $("#leaveType").val();
+	var reason = $("#reason").val();
+	var userId = $("#userId").val();
+	var processDefinitionKey = $("#processDefinitionKey").val();
+	var param = {startTime:startTime,endTime:endTime,leaveType:leaveType,reason:reason,userId:userId,processDefinitionKey:processDefinitionKey};
+	console.log(param);
+	$.post( '/leave/startProcess',	param,
+		function (data){
+			refleshAllTable();
+		}
+	 );
+}
+
+function refleshAllTable(){
+	refleshTable('tijs','table1');
+	refleshTable('kermit','table2');
+}
+function refleshTable(userId,tableId){
+	var processDefinitionKey = $("#processDefinitionKey").val() ;
+	var $table = $("#"+tableId);
+	$table.empty();
+	$table.append("<tr>");
+	$table.append("<td>流程实例</td>");
+	$table.append("<td>请假类型</td>");
+	$table.append("<td>请假原因</td>");
+	$table.append("<td>环节名称</td>");
+	$table.append("<td>taskId</td>");
+	$table.append("<td>操作</td>");
+	$table.append("</tr>");
+	$.post('/leave/list',
+		{userId:userId,processDefinitionKey:processDefinitionKey},
+		function (result){
+			 if(result.status==0){
+				 var data=result.data;
+				 if(data.length > 0 ){
+					 for(var i=0;i<data.length;i++){
+						$table.append("<tr>");
+						$table.append("<td>"+data[i].processInstanceId+"</td>");
+						$table.append("<td>"+data[i].leaveType+"</td>");
+						$table.append("<td>"+data[i].reason+"</td>");
+						$table.append("<td>"+data[i].task.name+"</td>");
+						$table.append("<td>"+data[i].task.id+"</td>");
+						if(data[i].task.name == "调整申请"){
+							$table.append("<td><button onclick=\"reapply('"+data[i].task.id+"',1)\" >重新发起</button><button onclick=\"reapply('"+data[i].task.id+"',0)\" >结束</button></td>");
+						} else {
+							if(!data[i].task.assignee){
+								$table.append("<td><button onclick=\"claim('"+data[i].task.id+"','"+userId+"')\" >签收</button></td>");
+							}else{
+								$table.append("<td><button onclick=\"approve('"+data[i].task.id+"',1)\" >同意</button><button onclick=\"approve('"+data[i].task.id+"',0)\" >不同意</button></td>");
+							}
+						}
+						$table.append("</tr>");
+					 }
+				 }
+				 
+			 }
+		} 
+	);
+	
+}
+
+function complete(taskId){
+	$.post('/leave/complete/'+taskId,
+		function (data){
+			refleshAllTable();
+		}
+	);
+}
+
+function approve(taskId,result){
+	$.post('/leave/approve',{taskId:taskId,result:result},
+		function (data){
+			refleshAllTable();
+		}
+	);
+}
+
+function reapply(taskId,result){
+	$.post('/leave/reapply',{taskId:taskId,result:result},
+		function (data){
+			refleshAllTable();
+		}
+	);
+}
+
+function claim (taskId,userId){
+	$.post('/leave/claim',{taskId:taskId,userId:userId},
+	function (data){
+		refleshAllTable();
+	}
+);
+}
+/* websocket */
+var ws = null;
+
+function setConnected(connected) {
+	document.getElementById('connect').disabled = connected;
+	document.getElementById('disconnect').disabled = !connected;
+	document.getElementById('reverse').disabled = !connected;
+}
+//连接websocket，这里使用h5的方式
+function connect() {
+// 	var target = document.getElementById('target').value;
+	var target = 'ws://' + window.location.host +"/webSocket";
+	ws = new WebSocket(target);
+	ws.onopen = function () {
+		setConnected(true);
+		log('Info: WebSocket connection opened.');
+	};
+	ws.onmessage = function (event) {
+		log('Received: ' + event.data);
+	};
+	ws.onclose = function () {
+		setConnected(false);
+		log('Info: WebSocket connection closed.');
+	};
+}
+
+function updateTarget() {
+	if (window.location.protocol == 'http:') {
+		document.getElementById('target').value = 'ws://' + window.location.host + document.getElementById('target').value;
+	} else {
+		document.getElementById('target').value = 'wss://' + window.location.host + document.getElementById('target').value;
+	}
+}
+
+function disconnect() {
+	if (ws != null) {
+		ws.close();
+		ws = null;
+	}
+	setConnected(false);
+}
+
+function reverse() {
+	if (ws != null) {
+		var message = document.getElementById('message').value;
+		log('Sent: ' + message);
+		ws.send(message);
+	} else {
+		alert('WebSocket connection not established, please connect.');
+	}
+}
+
+function log(message) {
+	var console = document.getElementById('console');
+	var p = document.createElement('p');
+	p.style.wordWrap = 'break-word';
+	p.appendChild(document.createTextNode(message));
+	console.appendChild(p);
+	while (console.childNodes.length > 10) {
+		console.removeChild(console.firstChild);
+	}
+	console.scrollTop = console.scrollHeight;
+}
+ 
+
+
+</script>
+</html>
