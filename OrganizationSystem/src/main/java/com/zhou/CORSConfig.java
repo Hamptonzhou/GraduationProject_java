@@ -5,7 +5,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * 解决前端发送ajax因为跨域而无法访问的问题
+ * 解决前端发送ajax因为跨域而无法访问的问题，统一打包后，不再单独在项目配置
  * 
  * @Title:
  * @Description:
