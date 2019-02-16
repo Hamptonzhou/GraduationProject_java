@@ -9,8 +9,8 @@ import org.springframework.context.annotation.ComponentScan;
  * 
  * @Title:
  * @Description:
- * @Author:icxx
- * @Since:
+ * @Author:zhou
+ * @Since:2019年2月2日
  * @Version:1.1.0
  */
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
