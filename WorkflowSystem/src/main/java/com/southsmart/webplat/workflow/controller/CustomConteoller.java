@@ -72,4 +72,35 @@ public class CustomConteoller {
         output.close();
         return ResultUtil.success(result);
     }
+    
+    /**
+     * 删除已发布的模型(流程定义)
+     * 
+     * @param id
+     * @return
+     */
+    @RequestMapping("deleteDeploymentProcessDefinitionById")
+    public Result deleteDeploymentProcessDefinitionById(String processDefinitionId) {
+        String deploymentId = repositoryService.getProcessDefinition(processDefinitionId).getDeploymentId();
+        try {
+            //删除指定版本的流程定义，如下代码导致直接删除部署，
+            repositoryService.deleteDeployment(deploymentId);
+        } catch (Exception e) {
+            return ResultUtil.fail("删除失败！该流程由正在执行的任务，请联系管理员使用级联删除！");
+        }
+        return ResultUtil.success();
+    }
+    
+    /**
+     * 级联删除已发布的模型(流程定义)，级联删除流程下的所有任务、资源！
+     * 
+     * @param id
+     * @return
+     */
+    @RequestMapping("cascadeDeleteDeployment")
+    public Result cascadeDeleteDeployment(String processDefinitionId) {
+        String deploymentId = repositoryService.getProcessDefinition(processDefinitionId).getDeploymentId();
+        repositoryService.deleteDeployment(deploymentId, true);
+        return ResultUtil.success("级联删除成功，该流程下的所有任务、资源已彻底删除！");
+    }   
 }
