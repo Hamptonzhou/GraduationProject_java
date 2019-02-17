@@ -22,8 +22,6 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.southsmart.webplat.common.model.Result;
 import com.southsmart.webplat.common.util.ResultUtil;
-import com.southsmart.webplat.workflow.service.ICustomService;
 
 @RequestMapping("model")
 @RestController
@@ -247,7 +244,18 @@ public class ModelerController {
         if (bytes == null) {
             return ResultUtil.fail("模型数据为空，请先设计流程并成功保存，再进行发布。");
         }
+        //TODO
         JsonNode modelNode = new ObjectMapper().readTree(bytes);
+        //修改modelNode，默认设置流程定义的key，因为当key为空时，无法进行模型发布
+        JsonNode processId = modelNode.get("properties").get("process_id");
+        if ("\"\"".equals(processId)) {
+            ObjectNode properties = (ObjectNode)modelNode.get("properties");
+            properties.put("process_id", "_" + UUID.randomUUID().toString().substring(0, 5));
+            ObjectNode objectNode = (ObjectNode)modelNode;
+            objectNode.set("properties", properties);
+            modelNode = objectNode;
+        }
+        
         BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
         if (model.getProcesses().size() == 0) {
             return ResultUtil.fail("数据模型不符要求，请至少设计一条主线流程。");
@@ -272,8 +280,12 @@ public class ModelerController {
      */
     @RequestMapping("deleteModelById")
     public Result deleteModelById(String modelId) {
-        //TODO 删除模型的时候，需要判断模型下是否由发布的流程。删除模型统一全部删除子项的所有流程？
-        repositoryService.deleteModel(modelId);
-        return ResultUtil.success();
+        Model model = repositoryService.createModelQuery().modelId(modelId).singleResult();
+        if (model.getDeploymentId() == null) {
+            repositoryService.deleteModel(modelId);
+            return ResultUtil.success();
+        } else {
+            return ResultUtil.fail("模型下存在已发布的流程，请先删除流程！");
+        }
     }
 }
