@@ -35,7 +35,7 @@
 				{
 					"id": "name",
 					"type": "String",
-					"title": "名称",
+					"title": "流程名称",
 					"value": "",
 					"description": "The descriptive name of the BPMN element.",
 					"popular": true,
@@ -70,32 +70,6 @@
 			]
 		},
 		{
-			"name": "process_versionpackage",
-			"properties": [
-				{
-					"id": "process_version",
-					"type": "String",
-					"title": "流程版本字符串 (仅文档)",
-					"value": "",
-					"description": "Version identifier for documentation purpose.",
-					"popular": true
-				}
-			]
-		},
-		{
-			"name": "process_namespacepackage",
-			"properties": [
-				{
-					"id": "process_namespace",
-					"type": "String",
-					"title": "目标名称空间",
-					"value": "http://www.activiti.org/processdef",
-					"description": "Target namespace for the process definition.",
-					"popular": true
-				}
-			]
-		},
-		{
 			"name": "asynchronousdefinitionpackage",
 			"properties": [
 				{
@@ -117,45 +91,6 @@
 					"title": "Exclusive",
 					"value": "false",
 					"description": "Define the activity as exclusive.",
-					"popular": true
-				}
-			]
-		},
-		{
-			"name": "executionlistenerspackage",
-			"properties": [
-				{
-					"id": "executionlisteners",
-					"type": "multiplecomplex",
-					"title": "执行监听器",
-					"value": "",
-					"description": "Listeners for an activity, process, sequence flow, start and end event.",
-					"popular": true
-				}
-			]
-		},
-		{
-			"name": "tasklistenerspackage",
-			"properties": [
-				{
-					"id": "tasklisteners",
-					"type": "multiplecomplex",
-					"title": "任务监听器",
-					"value": "",
-					"description": "Listeners for a user task",
-					"popular": true
-				}
-			]
-		},
-		{
-			"name": "eventlistenerspackage",
-			"properties": [
-				{
-					"id": "eventlisteners",
-					"type": "multiplecomplex",
-					"title": "事件监听器",
-					"value": "",
-					"description": "Listeners for any event happening in the Activiti Engine. It's also possible to rethrow the event as a signal, message or error event",
 					"popular": true
 				}
 			]
@@ -208,19 +143,6 @@
 					"title": "到期时间",
 					"value": "",
 					"description": "用户任务到期时间.",
-					"popular": true
-				}
-			]
-		},
-		{
-			"name": "prioritydefinitionpackage",
-			"properties": [
-				{
-					"id": "prioritydefinition",
-					"type": "String",
-					"title": "优先级",
-					"value": "",
-					"description": "用户任务的优先级.",
 					"popular": true
 				}
 			]
@@ -853,32 +775,6 @@
 					"title": "Flow order",
 					"value": "",
 					"description": "Order outgoing sequence flows.",
-					"popular": true
-				}
-			]
-		},
-		{
-			"name": "signaldefinitionspackage",
-			"properties": [
-				{
-					"id": "signaldefinitions",
-					"type": "multiplecomplex",
-					"title": "Signal definitions",
-					"value": "",
-					"description": "Signal definitions",
-					"popular": true
-				}
-			]
-		},
-		{
-			"name": "messagedefinitionspackage",
-			"properties": [
-				{
-					"id": "messagedefinitions",
-					"type": "multiplecomplex",
-					"title": "Message definitions",
-					"value": "",
-					"description": "Message definitions",
 					"popular": true
 				}
 			]
