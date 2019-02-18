@@ -70,4 +70,13 @@ public interface IUserDao extends JpaRepository<UserInfo, String> {
      */
     int countByLoginName(String loginName);
     
+    /**
+     * 根据登陆名查询用户信息
+     * 
+     * @param loginName
+     * @return
+     * @Description:
+     */
+    UserInfo findByLoginName(String loginName);
+    
 }

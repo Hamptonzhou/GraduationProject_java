@@ -68,4 +68,13 @@ public interface IUserService {
      * @Description:
      */
     boolean checkLoginNameExist(String loginName);
+    
+    /**
+     * 根据登陆名查询用户信息
+     * 
+     * @param loginName
+     * @return
+     * @Description:用于登陆时获取信息验证
+     */
+    UserInfo getUserInfoByLoginName(String loginName);
 }

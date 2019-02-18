@@ -78,4 +78,9 @@ public class UserServiceImpl implements IUserService {
             return true;
         }
     }
+    
+    @Override
+    public UserInfo getUserInfoByLoginName(String loginName) {
+        return userDao.findByLoginName(loginName);
+    }
 }
