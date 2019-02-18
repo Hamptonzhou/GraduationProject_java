@@ -244,18 +244,16 @@ public class ModelerController {
         if (bytes == null) {
             return ResultUtil.fail("模型数据为空，请先设计流程并成功保存，再进行发布。");
         }
-        //TODO
         JsonNode modelNode = new ObjectMapper().readTree(bytes);
+        
         //修改modelNode，默认设置流程定义的key，因为当key为空时，无法进行模型发布
         JsonNode processId = modelNode.get("properties").get("process_id");
-        if ("\"\"".equals(processId)) {
-            ObjectNode properties = (ObjectNode)modelNode.get("properties");
-            properties.put("process_id", "_" + UUID.randomUUID().toString().substring(0, 5));
-            ObjectNode objectNode = (ObjectNode)modelNode;
-            objectNode.set("properties", properties);
-            modelNode = objectNode;
+        //初次发布时，流程标识为""，为其赋值，往后发布，必须使用第一次赋予的值，否则为不同的流程定义，而不是版本升序
+        if ("\"\"".equals(processId.toString())) {
+            ((ObjectNode)modelNode.get("properties")).put("process_id",
+                "_" + UUID.randomUUID().toString().substring(0, 5));
+            repositoryService.addModelEditorSource(modelData.getId(), modelNode.toString().getBytes("utf-8"));
         }
-        
         BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
         if (model.getProcesses().size() == 0) {
             return ResultUtil.fail("数据模型不符要求，请至少设计一条主线流程。");
