@@ -20,7 +20,7 @@ public final class WebServiceUtils {
     /**
      * 存放在seesion的userId名称
      */
-    private final static String USERID_IN_SESSION_NAME = "USERID_IN_SESSION";
+    private final static String USERID_IN_SESSION_NAME = "userId";
     
     /**
      * 获取当前请求对象，需要在web.xml中配置RequestContextListener监听器
