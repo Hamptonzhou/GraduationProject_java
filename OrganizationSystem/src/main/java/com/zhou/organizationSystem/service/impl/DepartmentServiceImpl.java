@@ -1,4 +1,4 @@
-package com.zhou.service.impl;
+package com.zhou.organizationSystem.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.zhou.dao.IDepartmentDao;
-import com.zhou.entity.DepartmentInfo;
-import com.zhou.service.IDepartmentService;
+import com.zhou.organizationSystem.dao.IDepartmentDao;
+import com.zhou.organizationSystem.entity.DepartmentInfo;
+import com.zhou.organizationSystem.service.IDepartmentService;
 
 /**
  * 

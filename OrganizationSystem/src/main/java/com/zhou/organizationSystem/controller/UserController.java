@@ -1,11 +1,11 @@
-package com.zhou.controller;
+package com.zhou.organizationSystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zhou.entity.UserInfo;
-import com.zhou.service.IUserService;
+import com.zhou.organizationSystem.entity.UserInfo;
+import com.zhou.organizationSystem.service.IUserService;
 import com.zhou.utils.PageQueryData;
 import com.zhou.utils.common.model.Result;
 import com.zhou.utils.common.util.ResultUtil;

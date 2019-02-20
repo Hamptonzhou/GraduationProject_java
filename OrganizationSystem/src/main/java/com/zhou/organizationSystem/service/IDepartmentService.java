@@ -1,8 +1,8 @@
-package com.zhou.service;
+package com.zhou.organizationSystem.service;
 
 import java.util.List;
 
-import com.zhou.entity.DepartmentInfo;
+import com.zhou.organizationSystem.entity.DepartmentInfo;
 
 /**
  * 

@@ -1,6 +1,6 @@
-package com.zhou.service;
+package com.zhou.organizationSystem.service;
 
-import com.zhou.entity.UserInfo;
+import com.zhou.organizationSystem.entity.UserInfo;
 import com.zhou.utils.PageQueryData;
 
 /**

@@ -1,4 +1,4 @@
-package com.zhou.service.impl;
+package com.zhou.organizationSystem.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zhou.dao.IUserDao;
-import com.zhou.entity.UserInfo;
-import com.zhou.service.IUserService;
+import com.zhou.organizationSystem.dao.IUserDao;
+import com.zhou.organizationSystem.entity.UserInfo;
+import com.zhou.organizationSystem.service.IUserService;
 import com.zhou.utils.PageQueryData;
 
 /**

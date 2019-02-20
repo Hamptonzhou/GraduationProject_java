@@ -1,4 +1,4 @@
-package com.zhou.controller;
+package com.zhou.organizationSystem.controller;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zhou.entity.DepartmentInfo;
-import com.zhou.service.IDepartmentService;
+import com.zhou.organizationSystem.entity.DepartmentInfo;
+import com.zhou.organizationSystem.service.IDepartmentService;
 import com.zhou.utils.common.model.Result;
 import com.zhou.utils.common.util.ResultUtil;
 

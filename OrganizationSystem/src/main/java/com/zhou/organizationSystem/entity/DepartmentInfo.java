@@ -1,4 +1,4 @@
-package com.zhou.entity;
+package com.zhou.organizationSystem.entity;
 
 import java.util.List;
 

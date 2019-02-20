@@ -1,10 +1,10 @@
-package com.zhou.dao;
+package com.zhou.organizationSystem.dao;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.zhou.entity.DepartmentInfo;
+import com.zhou.organizationSystem.entity.DepartmentInfo;
 
 /**
  * 数据库表department_info的数据访问层

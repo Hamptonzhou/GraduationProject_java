@@ -1,5 +1,5 @@
 
-package com.zhou.controller;
+package com.zhou.organizationSystem.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zhou.entity.UserInfo;
-import com.zhou.service.IUserService;
+import com.zhou.organizationSystem.entity.UserInfo;
+import com.zhou.organizationSystem.service.IUserService;
 import com.zhou.utils.CheckUtil;
 import com.zhou.utils.common.model.Result;
 import com.zhou.utils.common.util.ResultUtil;

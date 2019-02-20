@@ -1,4 +1,4 @@
-package com.zhou.dao;
+package com.zhou.organizationSystem.dao;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.zhou.entity.UserInfo;
+import com.zhou.organizationSystem.entity.UserInfo;
 
 /**
  * 数据库表user_info的数据访问层
