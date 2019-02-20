@@ -9,7 +9,7 @@
 		<version>2.1.2.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>zhou</groupId>
+	<groupId>com.zhou</groupId>
 	<artifactId>LogCollection</artifactId>
 	<version>1.0</version>
 	<name>LogCollection</name>
