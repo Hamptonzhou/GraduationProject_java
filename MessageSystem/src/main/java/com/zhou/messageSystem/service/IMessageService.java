@@ -1,9 +1,9 @@
-package com.zhou.service;
+package com.zhou.messageSystem.service;
 
 import java.io.IOException;
 import java.text.ParseException;
 
-import com.zhou.entity.MessageItem;
+import com.zhou.messageSystem.entity.MessageItem;
 import com.zhou.utils.PageQueryData;
 
 /**

@@ -1,4 +1,4 @@
-package com.zhou.dao;
+package com.zhou.messageSystem.dao;
 
 import java.util.Date;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.zhou.entity.MessageItem;
+import com.zhou.messageSystem.entity.MessageItem;
 
 /**
  * 消息数据库表message_item的操作类

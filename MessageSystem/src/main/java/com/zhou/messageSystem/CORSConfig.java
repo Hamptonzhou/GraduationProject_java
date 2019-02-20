@@ -1,4 +1,4 @@
-package com.zhou;
+package com.zhou.messageSystem;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

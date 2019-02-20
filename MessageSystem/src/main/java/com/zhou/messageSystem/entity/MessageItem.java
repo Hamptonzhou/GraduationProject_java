@@ -1,4 +1,4 @@
-package com.zhou.entity;
+package com.zhou.messageSystem.entity;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package com.zhou.config;
+package com.zhou.messageSystem.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -6,7 +6,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import com.zhou.controller.MessageWebsocketHandler;
+import com.zhou.messageSystem.controller.MessageWebsocketHandler;
 
 /**
  * websocket配置类

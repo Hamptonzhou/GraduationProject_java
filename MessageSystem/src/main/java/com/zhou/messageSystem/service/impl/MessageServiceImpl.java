@@ -1,4 +1,4 @@
-package com.zhou.service.impl;
+package com.zhou.messageSystem.service.impl;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -20,10 +20,10 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.alibaba.fastjson.JSON;
-import com.zhou.dao.IMessageInfoDao;
-import com.zhou.entity.MessageItem;
-import com.zhou.service.IMessageService;
-import com.zhou.service.IWebsockSessionContainer;
+import com.zhou.messageSystem.dao.IMessageInfoDao;
+import com.zhou.messageSystem.entity.MessageItem;
+import com.zhou.messageSystem.service.IMessageService;
+import com.zhou.messageSystem.service.IWebsockSessionContainer;
 import com.zhou.utils.PageQueryData;
 
 /**

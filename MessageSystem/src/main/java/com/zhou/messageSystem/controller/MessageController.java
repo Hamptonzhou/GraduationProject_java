@@ -1,4 +1,4 @@
-package com.zhou.controller;
+package com.zhou.messageSystem.controller;
 
 import java.io.IOException;
 
@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zhou.entity.MessageItem;
-import com.zhou.service.IMessageService;
+import com.zhou.messageSystem.entity.MessageItem;
+import com.zhou.messageSystem.service.IMessageService;
 import com.zhou.utils.CheckUtil;
 import com.zhou.utils.PageQueryData;
 import com.zhou.utils.common.model.Result;

@@ -1,4 +1,4 @@
-package com.zhou.service;
+package com.zhou.messageSystem.service;
 
 import java.util.List;
 import java.util.Set;

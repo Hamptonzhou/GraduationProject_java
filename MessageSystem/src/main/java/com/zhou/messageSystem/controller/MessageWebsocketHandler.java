@@ -1,4 +1,4 @@
-package com.zhou.controller;
+package com.zhou.messageSystem.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +9,8 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.zhou.service.IMessageService;
-import com.zhou.service.IWebsockSessionContainer;
+import com.zhou.messageSystem.service.IMessageService;
+import com.zhou.messageSystem.service.IWebsockSessionContainer;
 import com.zhou.utils.CheckUtil;
 import com.zhou.utils.exception.ArgumentNullException;
 
@@ -55,7 +55,7 @@ public class MessageWebsocketHandler extends TextWebSocketHandler {
         //用户一登录添加用户id和session到Map集合中，记录在线状态
         sessionContainer.putReceiver(userId, session);
         //检查该用户是否有未读的广播消息，如果有，新增一条记录
-        messageService.checkUnreadBroadcastMessage(userId);
+        //messageService.checkUnreadBroadcastMessage(userId);
         //获取未读消息总数
         int count = messageService.countUnreadMessage(userId);
         //通知在线用户，上线

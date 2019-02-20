@@ -1,4 +1,4 @@
-package com.zhou.service.impl;
+package com.zhou.messageSystem.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
-import com.zhou.service.IWebsockSessionContainer;
+import com.zhou.messageSystem.service.IWebsockSessionContainer;
 
 /**
  * websock中session容器的实现
