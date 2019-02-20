@@ -1,11 +1,11 @@
-package com.zhou.service;
+package com.zhou.holidaySystem.service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.zhou.entity.HolidayDefinition;
-import com.zhou.entity.WorkHourByWeek;
+import com.zhou.holidaySystem.entity.HolidayDefinition;
+import com.zhou.holidaySystem.entity.WorkHourByWeek;
 
 /**
  * 节假日管理及工作日计算服务

@@ -1,4 +1,4 @@
-package com.zhou.entity;
+package com.zhou.holidaySystem.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.zhou.controller;
+package com.zhou.holidaySystem.controller;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.Lists;
-import com.zhou.common.WeekEnum;
-import com.zhou.entity.WorkHourByWeek;
-import com.zhou.service.IHolidayManagementService;
-import com.zhou.service.IHolidayService;
+import com.zhou.holidaySystem.common.WeekEnum;
+import com.zhou.holidaySystem.entity.WorkHourByWeek;
+import com.zhou.holidaySystem.service.IHolidayManagementService;
+import com.zhou.holidaySystem.service.IHolidayService;
 import com.zhou.utils.PageQueryData;
 import com.zhou.utils.common.model.Result;
 import com.zhou.utils.common.util.ResultUtil;
