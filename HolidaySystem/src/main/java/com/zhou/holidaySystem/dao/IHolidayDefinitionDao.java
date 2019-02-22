@@ -16,12 +16,8 @@ import com.zhou.holidaySystem.entity.HolidayDefinition;
  * @Since:2018年9月11日
  * @Version:1.0.0
  */
-@Repository(IHolidayDefinitionDao.DAO_BEAN_NAME)
+@Repository
 public interface IHolidayDefinitionDao extends JpaRepository<HolidayDefinition, String> {
-    /**
-     * 用于Spring映射的bean名称.
-     */
-    public static final String DAO_BEAN_NAME = "holidayDefinitionDao";
     
     /**
      * 获取两个世界点之间的数据.

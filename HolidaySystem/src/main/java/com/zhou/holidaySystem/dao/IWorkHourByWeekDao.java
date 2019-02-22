@@ -13,7 +13,7 @@ import com.zhou.holidaySystem.entity.WorkHourByWeek;
  * @Since:2019年1月21日
  * @Version:1.1.0
  */
-@Repository()
+@Repository
 public interface IWorkHourByWeekDao extends JpaRepository<WorkHourByWeek, String> {
     
 }
