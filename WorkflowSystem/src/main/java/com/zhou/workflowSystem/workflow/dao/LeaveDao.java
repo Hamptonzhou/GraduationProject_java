@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.zhou.workflowSystem.workflow.entity.Leave;
 
-@Repository("leaveDao")
+@Repository
 public interface LeaveDao extends JpaRepository<Leave, Long> {
     
 }
