@@ -26,7 +26,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @author HenryYan
  */
 @Entity
-@Table(name = "T_LEAVE")
+@Table(name = "t_leave")
 //@JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler", "fieldHandler"})
 public class Leave implements Serializable {
     
