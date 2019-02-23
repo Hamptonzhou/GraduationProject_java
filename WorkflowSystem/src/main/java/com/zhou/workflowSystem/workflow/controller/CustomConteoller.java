@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zhou.utils.PageQueryData;
 import com.zhou.workflowSystem.common.model.Result;
 import com.zhou.workflowSystem.common.util.ResultUtil;
+import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
 import com.zhou.workflowSystem.workflow.entity.ProcessDefinitionTree;
 import com.zhou.workflowSystem.workflow.service.ICustomService;
 
@@ -30,7 +32,7 @@ import com.zhou.workflowSystem.workflow.service.ICustomService;
 public class CustomConteoller {
     
     @Autowired
-    private ICustomService customService;
+    private ICustomService<MyWorkEntity> customService;
     
     @Autowired
     private RepositoryService repositoryService;
@@ -101,6 +103,23 @@ public class CustomConteoller {
     public Result cascadeDeleteDeployment(String processDefinitionId) {
         String deploymentId = repositoryService.getProcessDefinition(processDefinitionId).getDeploymentId();
         repositoryService.deleteDeployment(deploymentId, true);
-        return ResultUtil.success("级联删除成功，该流程下的所有任务、资源已彻底删除！");
-    }   
+        return ResultUtil.success("级联删除成功，该流程下的所有任务、资源、部署对象已彻底删除！");
+    }
+    
+    //###############################我的工作模块接口################################################
+    /**
+     * 获取在办工作、个人已办、办结工作列表
+     * 
+     * @param pageQueryData 传递用户的真实姓名到queryId中，并且在searchText中指定查询数据的类型
+     * @param request
+     * @return
+     * @throws Exception
+     * @Description:searchText取值为：HanglingWork、FinishedWork、PersonalDoneWork
+     */
+    @RequestMapping(value = "getMyWorkListBySearchText")
+    public Result getMyWorkListBySearchText(PageQueryData<MyWorkEntity> pageQueryData)
+        throws Exception {
+        customService.getMyWorkListBysearchText(pageQueryData);
+        return ResultUtil.success(pageQueryData.getResult());
+    }
 }
