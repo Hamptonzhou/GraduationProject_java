@@ -32,6 +32,12 @@
 	</properties>
 
 	<dependencies>
+		<!-- 引用项目 -->
+		<dependency>
+			<groupId>com.zhou</groupId>
+			<artifactId>util</artifactId>
+			<version>1.0</version>
+		</dependency>
 		<!--fast jackson -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
