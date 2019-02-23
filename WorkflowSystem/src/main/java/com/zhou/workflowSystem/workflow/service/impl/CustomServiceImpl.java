@@ -4,12 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zhou.utils.PageQueryData;
+import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
 import com.zhou.workflowSystem.workflow.entity.ProcessDefinitionTree;
+import com.zhou.workflowSystem.workflow.model.CustomActivitiTask;
+import com.zhou.workflowSystem.workflow.model.CustomProcessInstance;
 import com.zhou.workflowSystem.workflow.service.ICustomService;
 
 /**
@@ -21,12 +29,18 @@ import com.zhou.workflowSystem.workflow.service.ICustomService;
  * @Version:1.1.0
  */
 @Service
-public class CustomServiceImpl implements ICustomService {
+public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
     //@Autowired
     //private CustomDao customDao;
     
     @Autowired
     private RepositoryService repositoryService;
+    
+    @Autowired
+    private TaskService taskService;
+    
+    @Autowired
+    private RuntimeService runtimeService;
     
     @Override
     public ProcessDefinitionTree getProcessDefinitionTree() {
@@ -76,5 +90,87 @@ public class CustomServiceImpl implements ICustomService {
             treeChildren.add(processDefinitionTree);
         }
         return treeChildren;
+    }
+    
+    @Override
+    public void getMyWorkListBysearchText(PageQueryData<MyWorkEntity> pageQueryData) {
+        switch (pageQueryData.getSearchText()) {
+            case "HanglingWork":
+                this.findHanglingWorkList(pageQueryData);
+                break;
+            case "FinishedWork":
+                this.findFinishedWorkList(pageQueryData);
+                break;
+            case "PersonalDoneWork":
+                this.findPersonalDoneWorkList(pageQueryData);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    /**
+     * 获取个人已办理的工作列表
+     * 
+     * @param pageQueryData
+     * @Description:
+     */
+    private void findPersonalDoneWorkList(PageQueryData<MyWorkEntity> pageQueryData) {
+        String realName = pageQueryData.getQueryId();
+        List<MyWorkEntity> MyWorkEntityResultList = new ArrayList<MyWorkEntity>();
+        MyWorkEntity myWorkEntity = new MyWorkEntity();
+        myWorkEntity.setBusinessName("个人已办理的工作列表");
+        MyWorkEntityResultList.add(myWorkEntity);
+        pageQueryData.setQueryList(MyWorkEntityResultList);
+        
+    }
+    
+    /**
+     * 获取办结工作列表
+     * 
+     * @param pageQueryData
+     * @Description:
+     */
+    private void findFinishedWorkList(PageQueryData<MyWorkEntity> pageQueryData) {
+        String realName = pageQueryData.getQueryId();
+        List<MyWorkEntity> MyWorkEntityResultList = new ArrayList<MyWorkEntity>();
+        MyWorkEntity myWorkEntity = new MyWorkEntity();
+        myWorkEntity.setBusinessName("办结工作列表");
+        MyWorkEntityResultList.add(myWorkEntity);
+        pageQueryData.setQueryList(MyWorkEntityResultList);
+        
+    }
+    
+    /**
+     * 获取在办工作列表
+     * 
+     * @param pageQueryData
+     * @Description:
+     */
+    private void findHanglingWorkList(PageQueryData<MyWorkEntity> pageQueryData) {
+        String realName = pageQueryData.getQueryId();
+        List<MyWorkEntity> MyWorkEntityResultList = new ArrayList<MyWorkEntity>();
+        List<Task> tasks = new ArrayList<Task>();
+        // 根据当前人的ID查询
+        List<Task> todoList = taskService.createTaskQuery().taskAssignee(realName).list();
+        // 根据当前人未签收的任务
+        List<Task> unsignedTasks = taskService.createTaskQuery().taskCandidateUser(realName).list();
+        // 合并
+        tasks.addAll(todoList);
+        tasks.addAll(unsignedTasks);
+        // 根据流程的业务ID查询实体并关联
+        for (Task task : tasks) {
+            String processInstanceId = task.getProcessInstanceId();
+            System.out.println(task.toString());
+            ProcessInstance processInstance =
+                runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+            //String businessKey = processInstance.getBusinessKey();
+            MyWorkEntity myWorkEntity = new MyWorkEntity();
+            myWorkEntity.setProcessInstance(new CustomProcessInstance(processInstance));
+            myWorkEntity.setTask(new CustomActivitiTask(task));
+            myWorkEntity.setBusinessName(processInstance.getProcessDefinitionName());
+            MyWorkEntityResultList.add(myWorkEntity);
+        }
+        pageQueryData.setQueryList(MyWorkEntityResultList);
     }
 }
