@@ -3,9 +3,12 @@ package com.zhou.workflowSystem.workflow.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -38,6 +41,9 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
     
     @Autowired
     private TaskService taskService;
+    
+    @Autowired
+    private HistoryService historyService;
     
     @Autowired
     private RuntimeService runtimeService;
@@ -110,35 +116,69 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
     }
     
     /**
-     * 获取个人已办理的工作列表
+     * TODO 获取个人已办理的工作列表
      * 
      * @param pageQueryData
      * @Description:
      */
     private void findPersonalDoneWorkList(PageQueryData<MyWorkEntity> pageQueryData) {
         String realName = pageQueryData.getQueryId();
-        List<MyWorkEntity> MyWorkEntityResultList = new ArrayList<MyWorkEntity>();
-        MyWorkEntity myWorkEntity = new MyWorkEntity();
-        myWorkEntity.setBusinessName("个人已办理的工作列表");
-        MyWorkEntityResultList.add(myWorkEntity);
-        pageQueryData.setQueryList(MyWorkEntityResultList);
-        
+        List<MyWorkEntity> resultList = new ArrayList<MyWorkEntity>();
+        // 根据当前人的ID查询
+        List<HistoricTaskInstance> PersonalDoneTaskList =
+            historyService.createHistoricTaskInstanceQuery().taskAssignee(realName).list();
+        // 根据流程的业务ID查询实体并关联
+        for (HistoricTaskInstance task : PersonalDoneTaskList) {
+            //没有结束时间表示该环节尚未办理完结，则不应该出现在个人已办理列表中
+            if (task.getEndTime() != null) {
+                System.out.println(task.toString());
+                //业务情况从流程实例历史表中获取
+                HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                    .processInstanceId(task.getProcessInstanceId())
+                    .singleResult();
+                //环节信息从历史task表中获取，因为历史表记录的信息比较完善
+                HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
+                    .processInstanceId(task.getProcessInstanceId())
+                    .taskDefinitionKey(task.getTaskDefinitionKey())
+                    .singleResult();
+                MyWorkEntity myWorkEntity = new MyWorkEntity();
+                myWorkEntity.setPersonalDoneWorkAttributes(historicProcessInstance, historicTaskInstance);
+                resultList.add(myWorkEntity);
+            }
+        }
+        pageQueryData.setQueryList(resultList);
     }
     
     /**
-     * 获取办结工作列表
+     * TODO 获取办结工作列表
      * 
      * @param pageQueryData
      * @Description:
      */
     private void findFinishedWorkList(PageQueryData<MyWorkEntity> pageQueryData) {
         String realName = pageQueryData.getQueryId();
-        List<MyWorkEntity> MyWorkEntityResultList = new ArrayList<MyWorkEntity>();
-        MyWorkEntity myWorkEntity = new MyWorkEntity();
-        myWorkEntity.setBusinessName("办结工作列表");
-        MyWorkEntityResultList.add(myWorkEntity);
-        pageQueryData.setQueryList(MyWorkEntityResultList);
-        
+        List<MyWorkEntity> resultList = new ArrayList<MyWorkEntity>();
+        // 根据当前人的ID查询
+        List<HistoricTaskInstance> PersonalDoneTaskList =
+            historyService.createHistoricTaskInstanceQuery().taskAssignee(realName).list();
+        // 根据流程的业务ID查询实体并关联
+        for (HistoricTaskInstance task : PersonalDoneTaskList) {
+            //某一个流程中，该用户办理的环节已经办理结束
+            if (task.getEndTime() != null) {
+                System.out.println(task.toString());
+                //业务情况从流程实例历史表中获取
+                HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                    .processInstanceId(task.getProcessInstanceId())
+                    .singleResult();
+                //该流程存在结束时间，说明该流程实例已经完全结束
+                if (historicProcessInstance.getEndTime() != null) {
+                    MyWorkEntity myWorkEntity = new MyWorkEntity();
+                    myWorkEntity.setFinishedWorkAttributes(historicProcessInstance);
+                    resultList.add(myWorkEntity);
+                }
+            }
+            pageQueryData.setQueryList(resultList);
+        }
     }
     
     /**
@@ -149,7 +189,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
      */
     private void findHanglingWorkList(PageQueryData<MyWorkEntity> pageQueryData) {
         String realName = pageQueryData.getQueryId();
-        List<MyWorkEntity> MyWorkEntityResultList = new ArrayList<MyWorkEntity>();
+        List<MyWorkEntity> resultList = new ArrayList<MyWorkEntity>();
         List<Task> tasks = new ArrayList<Task>();
         // 根据当前人的ID查询
         List<Task> todoList = taskService.createTaskQuery().taskAssignee(realName).list();
@@ -160,17 +200,20 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         tasks.addAll(unsignedTasks);
         // 根据流程的业务ID查询实体并关联
         for (Task task : tasks) {
-            String processInstanceId = task.getProcessInstanceId();
             System.out.println(task.toString());
-            ProcessInstance processInstance =
-                runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-            //String businessKey = processInstance.getBusinessKey();
+            //业务情况从流程实例历史表中获取
+            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .singleResult();
+            //在办环节的开始时间、接办时间需要从历史task表中获取
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .taskDefinitionKey(task.getTaskDefinitionKey())
+                .singleResult();
             MyWorkEntity myWorkEntity = new MyWorkEntity();
-            myWorkEntity.setProcessInstance(new CustomProcessInstance(processInstance));
-            myWorkEntity.setTask(new CustomActivitiTask(task));
-            myWorkEntity.setBusinessName(processInstance.getProcessDefinitionName());
-            MyWorkEntityResultList.add(myWorkEntity);
+            myWorkEntity.setHanglingWorkAttributes(historicProcessInstance, historicTaskInstance);
+            resultList.add(myWorkEntity);
         }
-        pageQueryData.setQueryList(MyWorkEntityResultList);
+        pageQueryData.setQueryList(resultList);
     }
 }
