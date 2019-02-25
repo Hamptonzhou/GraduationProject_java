@@ -55,6 +55,8 @@ public class MyWorkEntity {
     /**
      * 在办工作列表属性
      */
+    private String taskId;
+    
     //业务名称，使用流程定义名称充当
     private String businessName;
     
