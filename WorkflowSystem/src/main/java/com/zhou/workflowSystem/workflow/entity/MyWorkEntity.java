@@ -57,6 +57,9 @@ public class MyWorkEntity {
      */
     private String taskId;
     
+    //任务的类型标识
+    private String taskType;
+    
     //业务名称，使用流程定义名称充当
     private String businessName;
     
