@@ -8,8 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.activiti.engine.RepositoryService;
+import org.activiti.image.ProcessDiagramGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zhou.utils.PageQueryData;
@@ -121,5 +124,54 @@ public class CustomConteoller {
         throws Exception {
         customService.getMyWorkListBysearchText(pageQueryData);
         return ResultUtil.success(pageQueryData.getResult());
+    }
+    
+    /**
+     * 获取流程实例的状态图片，正在执行的环节会有红色边框
+     * 
+     * @param pageQueryData
+     * @return
+     * @throws Exception
+     * @Description:queryId传递流程实例id
+     */
+    @RequestMapping(value = "getProcessImage")
+    public Result getProcessImage(PageQueryData<MyWorkEntity> pageQueryData)
+        throws Exception {
+        customService.getProcessStatusImage(pageQueryData);
+        return ResultUtil.success(pageQueryData.getSearchTextMap());
+    }
+    
+    /**
+     * 接办或退办任务
+     * 
+     * @param taskId
+     * @param userId
+     * @return
+     * @Description:当userId为空时，执行退签功能。退签之后，组成员都可以查看任务内容。回退到组任务的前提是，本来是一个组任务
+     */
+    @RequestMapping(value = "claimTask")
+    public Result claimTask(String taskId, String userId) {
+        if (taskId == null) {
+            return ResultUtil.fail("taskID不能为空 ");
+        }
+        customService.claimTask(taskId, userId);
+        return ResultUtil.success();
+    }
+    
+    /**
+     * 完成任务
+     * 
+     * @param taskId
+     * @return
+     * @Description:queryId接收taskId
+     */
+    @RequestMapping(value = "completeTask", method = {RequestMethod.POST, RequestMethod.GET})
+    public Result completeTask(String taskId) {
+        if (taskId == null) {
+            return ResultUtil.fail("taskID不能为空 ");
+        }
+        Map<String, Object> variables = new HashMap<String, Object>();
+        customService.completeTask(taskId, variables);
+        return ResultUtil.success();
     }
 }
