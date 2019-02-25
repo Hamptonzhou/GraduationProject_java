@@ -1,8 +1,14 @@
 package com.zhou.workflowSystem.workflow.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
@@ -13,9 +19,13 @@ import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.activiti.image.ProcessDiagramGenerator;
+import org.activiti.image.impl.DefaultProcessDiagramGenerator;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.zhou.utils.PageQueryData;
 import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
 import com.zhou.workflowSystem.workflow.entity.ProcessDefinitionTree;
@@ -211,9 +221,77 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
                 .taskDefinitionKey(task.getTaskDefinitionKey())
                 .singleResult();
             MyWorkEntity myWorkEntity = new MyWorkEntity();
+            myWorkEntity.setTaskId(task.getId());
             myWorkEntity.setHanglingWorkAttributes(historicProcessInstance, historicTaskInstance);
+            
+            boolean isGroupTask =
+                historicTaskInstance.getAssignee() == null || historicTaskInstance.getClaimTime() != null;
+            if (isGroupTask) {
+                String variablesValue = (String)taskService.getVariables(task.getId()).get(ClaimStatus.KEY);
+                if (variablesValue == null || ClaimStatus.UNCLAIM.equals(variablesValue)) {
+                    myWorkEntity.setTaskType("组任务-" + ClaimStatus.UNCLAIM);
+                } else {
+                    myWorkEntity.setTaskType("组任务-" + ClaimStatus.CLAIMED);
+                }
+            } else {
+                myWorkEntity.setTaskType("个人任务");
+            }
             resultList.add(myWorkEntity);
         }
         pageQueryData.setQueryList(resultList);
     }
+    
+    @Override
+    public void getProcessStatusImage(PageQueryData<MyWorkEntity> pageQueryData)
+        throws IOException {
+        String processInstanceId = pageQueryData.getQueryId();
+        ProcessInstance processInstance =
+            runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+        ProcessDefinition pde = repositoryService.getProcessDefinition(processInstance.getProcessDefinitionId());
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(pde.getId());
+        DefaultProcessDiagramGenerator processDiagramGenerator = new DefaultProcessDiagramGenerator();
+        InputStream resource = processDiagramGenerator
+            .generateDiagram(bpmnModel, "png", runtimeService.getActiveActivityIds(processInstance.getId()));
+        byte[] imageByte = IOUtils.toByteArray(resource);
+        if (imageByte != null) {
+            Map<String, String> imgaeMap = new HashMap<String, String>(16);
+            imgaeMap.put("image", Base64.getEncoder().encodeToString(imageByte));
+            pageQueryData.setSearchTextMap(imgaeMap);
+        }
+    }
+    
+    /**
+     * 定义task是否被接办的流程变量的常量
+     * 
+     * @Title:
+     * @Description:
+     * @Author:zhou
+     * @Since:2019年2月25日
+     * @Version:1.1.0
+     */
+    static class ClaimStatus {
+        public static final String KEY = "claimOrNot";
+        
+        public static final String CLAIMED = "已接办";
+        
+        public static final String UNCLAIM = "未接办";
+    }
+    
+    @Override
+    public void claimTask(String taskId, String userId) {
+        Map<String, String> variables = new HashMap<String, String>();
+        if (userId == null) {
+            variables.put(ClaimStatus.KEY, ClaimStatus.UNCLAIM);
+        } else {
+            variables.put(ClaimStatus.KEY, ClaimStatus.CLAIMED);
+        }
+        taskService.setVariables(taskId, variables);
+        taskService.claim(taskId, userId);
+    }
+    
+    @Override
+    public void completeTask(String taskId, Map<String, Object> variables) {
+        taskService.complete(taskId, variables);
+    }
+    
 }
