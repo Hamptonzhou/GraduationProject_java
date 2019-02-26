@@ -8,9 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.activiti.engine.RepositoryService;
-import org.activiti.image.ProcessDiagramGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -170,8 +168,25 @@ public class CustomConteoller {
         if (taskId == null) {
             return ResultUtil.fail("taskID不能为空 ");
         }
-        Map<String, Object> variables = new HashMap<String, Object>();
-        customService.completeTask(taskId, variables);
+        customService.completeTask(taskId);
         return ResultUtil.success();
     }
+    
+    /**
+     * 设置备注内容
+     * 
+     * @param taskId
+     * @param remarkContent
+     * @return
+     * @Description: 保存流程变量即可实现
+     */
+    @RequestMapping(value = "setRemarkContent", method = {RequestMethod.POST})
+    public Result setRemarkContent(String taskId, String remarkContent) {
+        if (taskId == null || remarkContent == null) {
+            return ResultUtil.fail("taskID/remarkContent不能为空 ");
+        }
+        customService.setRemarkContent(taskId, remarkContent);
+        return ResultUtil.success();
+    }
+    
 }
