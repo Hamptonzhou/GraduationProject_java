@@ -1,5 +1,6 @@
 package com.zhou.workflowSystem.workflow.service.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,18 +20,16 @@ import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
-import org.activiti.image.ProcessDiagramGenerator;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
+import com.zhou.utils.CheckUtil;
 import com.zhou.utils.PageQueryData;
+import com.zhou.workflowSystem.common.Const;
 import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
 import com.zhou.workflowSystem.workflow.entity.ProcessDefinitionTree;
-import com.zhou.workflowSystem.workflow.model.CustomActivitiTask;
-import com.zhou.workflowSystem.workflow.model.CustomProcessInstance;
 import com.zhou.workflowSystem.workflow.service.ICustomService;
 
 /**
@@ -221,20 +220,20 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
                 .taskDefinitionKey(task.getTaskDefinitionKey())
                 .singleResult();
             MyWorkEntity myWorkEntity = new MyWorkEntity();
-            myWorkEntity.setTaskId(task.getId());
+            myWorkEntity.setRemarkContent((String)taskService.getVariable(task.getId(), Const.RemarkContent.KEY));
             myWorkEntity.setHanglingWorkAttributes(historicProcessInstance, historicTaskInstance);
-            
             boolean isGroupTask =
                 historicTaskInstance.getAssignee() == null || historicTaskInstance.getClaimTime() != null;
             if (isGroupTask) {
-                String variablesValue = (String)taskService.getVariables(task.getId()).get(ClaimStatus.KEY);
-                if (variablesValue == null || ClaimStatus.UNCLAIM.equals(variablesValue)) {
-                    myWorkEntity.setTaskType("组任务-" + ClaimStatus.UNCLAIM);
+                String variablesValue = (String)taskService.getVariables(task.getId()).get(Const.ClaimStatus.KEY);
+                if (variablesValue == null || Const.ClaimStatus.UNCLAIM.equals(variablesValue)) {
+                    myWorkEntity.setTaskType("组任务-" + Const.ClaimStatus.UNCLAIM);
                 } else {
-                    myWorkEntity.setTaskType("组任务-" + ClaimStatus.CLAIMED);
+                    myWorkEntity.setTaskType("组任务-" + Const.ClaimStatus.CLAIMED);
                 }
             } else {
                 myWorkEntity.setTaskType("个人任务");
+                myWorkEntity.setClaimTime(myWorkEntity.getTaskStartTime());
             }
             resultList.add(myWorkEntity);
         }
@@ -247,51 +246,67 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         String processInstanceId = pageQueryData.getQueryId();
         ProcessInstance processInstance =
             runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-        ProcessDefinition pde = repositoryService.getProcessDefinition(processInstance.getProcessDefinitionId());
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(pde.getId());
-        DefaultProcessDiagramGenerator processDiagramGenerator = new DefaultProcessDiagramGenerator();
-        InputStream resource = processDiagramGenerator
-            .generateDiagram(bpmnModel, "png", runtimeService.getActiveActivityIds(processInstance.getId()));
+        InputStream resource = null;
+        //如果流程已经结束，则无法在runtimeService找到高亮显示的环节图。直接返回完整的流程图即可。
+        if (processInstance == null) {
+            String processDefinitionId = historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .singleResult()
+                .getProcessDefinitionId();
+            resource = repositoryService.getProcessDiagram(processDefinitionId);
+        } else {
+            ProcessDefinition pde = repositoryService.getProcessDefinition(processInstance.getProcessDefinitionId());
+            BpmnModel bpmnModel = repositoryService.getBpmnModel(pde.getId());
+            DefaultProcessDiagramGenerator processDiagramGenerator = new DefaultProcessDiagramGenerator();
+            resource = processDiagramGenerator
+                .generateDiagram(bpmnModel, "png", runtimeService.getActiveActivityIds(processInstance.getId()));
+        }
         byte[] imageByte = IOUtils.toByteArray(resource);
         if (imageByte != null) {
             Map<String, String> imgaeMap = new HashMap<String, String>(16);
             imgaeMap.put("image", Base64.getEncoder().encodeToString(imageByte));
             pageQueryData.setSearchTextMap(imgaeMap);
         }
-    }
-    
-    /**
-     * 定义task是否被接办的流程变量的常量
-     * 
-     * @Title:
-     * @Description:
-     * @Author:zhou
-     * @Since:2019年2月25日
-     * @Version:1.1.0
-     */
-    static class ClaimStatus {
-        public static final String KEY = "claimOrNot";
-        
-        public static final String CLAIMED = "已接办";
-        
-        public static final String UNCLAIM = "未接办";
+        //        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        //        byte[] imageByte = new byte[4096];
+        //        int temp = 0;
+        //        while (-1 != (temp = resource.read(imageByte))) {
+        //            output.write(imageByte, 0, temp);
+        //        }
+        //        if (imageByte != null) {
+        //            Map<String, String> imgaeMap = new HashMap<String, String>(16);
+        //            imgaeMap.put("image", Base64.getEncoder().encodeToString(output.toByteArray()));
+        //            pageQueryData.setSearchTextMap(imgaeMap);
+        //        }
     }
     
     @Override
     public void claimTask(String taskId, String userId) {
         Map<String, String> variables = new HashMap<String, String>();
         if (userId == null) {
-            variables.put(ClaimStatus.KEY, ClaimStatus.UNCLAIM);
+            variables.put(Const.ClaimStatus.KEY, Const.ClaimStatus.UNCLAIM);
         } else {
-            variables.put(ClaimStatus.KEY, ClaimStatus.CLAIMED);
+            variables.put(Const.ClaimStatus.KEY, Const.ClaimStatus.CLAIMED);
         }
         taskService.setVariables(taskId, variables);
         taskService.claim(taskId, userId);
     }
     
     @Override
-    public void completeTask(String taskId, Map<String, Object> variables) {
-        taskService.complete(taskId, variables);
+    public void completeTask(String taskId) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        //如果是组任务，尚未有人接办时，不许允许提交
+        if (task.getAssignee() != null) {
+            taskService.complete(taskId);
+        }
     }
     
+    @Override
+    public void setRemarkContent(String taskId, String remarkContent) {
+        if (!CheckUtil.isNullorEmpty(remarkContent)) {
+            Map<String, String> variables = new HashMap<String, String>();
+            variables.put(Const.RemarkContent.KEY, remarkContent);
+            taskService.setVariables(taskId, variables);
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package com.zhou.workflowSystem.workflow.service;
 
 import java.io.IOException;
-import java.util.Map;
 
 import com.zhou.utils.PageQueryData;
 import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
@@ -51,7 +50,7 @@ public interface ICustomService<T> {
      * 接办任务
      * 
      * @param taskId
-     * @param userId 
+     * @param userId
      * @Description:当userId为空时，执行退签功能。退签之后，组成员都可以查看任务内容。回退到组任务的前提是，本来是一个组任务
      */
     void claimTask(String taskId, String userId);
@@ -63,6 +62,15 @@ public interface ICustomService<T> {
      * @param variables
      * @Description:
      */
-    void completeTask(String taskId, Map<String, Object> variables);
+    void completeTask(String taskId);
+    
+    /**
+     * 在流程变量中， 设置备注内容
+     * 
+     * @param taskId
+     * @param variables
+     * @Description:
+     */
+    void setRemarkContent(String taskId, String remarkContent);
     
 }
