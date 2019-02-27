@@ -74,6 +74,8 @@ public class MyWorkEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date claimTime;
     
+    private String remarkContent;
+    
     /**
      * 个人已办列表属性
      */
@@ -87,8 +89,6 @@ public class MyWorkEntity {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date businessEndTime;
-    
-    private String remark;
     
     /**
      * 设置在办工作列表的返回数据
@@ -106,6 +106,7 @@ public class MyWorkEntity {
         this.taskName = historicTaskInstance.getName();
         this.taskStartTime = historicTaskInstance.getStartTime();
         this.claimTime = historicTaskInstance.getClaimTime();
+        this.taskId = historicTaskInstance.getId();
     }
     
     /**
@@ -135,7 +136,6 @@ public class MyWorkEntity {
         this.businessStartTime = historicProcessInstance.getStartTime();
         this.businessEndTime = historicProcessInstance.getEndTime();
         this.durationTime = this.millisecondsToDate(historicProcessInstance.getDurationInMillis());
-        this.remark = historicProcessInstance.getDescription();
     }
     
     /**
