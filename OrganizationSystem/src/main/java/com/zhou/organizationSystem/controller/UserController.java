@@ -62,7 +62,7 @@ public class UserController {
     @RequestMapping("saveOrUpdateUser")
     public Result saveOrUpdateUser(UserInfo userInfo) {
         UserInfo user = userService.saveOrUpdateUser(userInfo);
-        return ResultUtil.success(user);
+        return ResultUtil.success(user.getRealName());
     }
     
     /**
