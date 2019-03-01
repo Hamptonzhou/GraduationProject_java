@@ -1,13 +1,10 @@
 package com.zhou.organizationSystem.entity;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -72,11 +69,4 @@ public class DepartmentInfo {
      */
     @Column(name = "parentId", length = 36, nullable = false)
     private String parentId;
-    
-    /**
-     * 当代表部门的时候，该属性用于存放部门下的所有岗位，不持久化，用于构建部门---岗位树返回到前端
-     */
-    @Transient
-    private List<DepartmentInfo> children;
-    
 }
