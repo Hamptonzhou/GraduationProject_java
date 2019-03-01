@@ -3,6 +3,7 @@ package com.zhou.organizationSystem.service;
 import java.util.List;
 
 import com.zhou.organizationSystem.entity.DepartmentInfo;
+import com.zhou.organizationSystem.entity.DepartmentTree;
 
 /**
  * 
@@ -19,7 +20,7 @@ public interface IDepartmentService {
      * @return
      * @Description:
      */
-    List<DepartmentInfo> getDepartmentTree();
+    DepartmentTree getDepartmentTree();
     
     /**
      * 新增或修改部门或岗位的信息

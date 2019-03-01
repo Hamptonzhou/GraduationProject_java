@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.zhou.organizationSystem.dao.IDepartmentDao;
 import com.zhou.organizationSystem.entity.DepartmentInfo;
+import com.zhou.organizationSystem.entity.DepartmentTree;
 import com.zhou.organizationSystem.service.IDepartmentService;
 
 /**
@@ -26,17 +26,35 @@ public class DepartmentServiceImpl implements IDepartmentService {
     private IDepartmentDao departmentDao;
     
     @Override
-    public List<DepartmentInfo> getDepartmentTree() {
-        List<DepartmentInfo> list = departmentDao.findAll();
-        List<DepartmentInfo> treeList = new ArrayList<>();
+    public DepartmentTree getDepartmentTree() {
+        //获取所有的部门
+        List<DepartmentInfo> list = departmentDao.findByParentId("#");
+        List<DepartmentTree> treeList = new ArrayList<>();
         for (DepartmentInfo departmentInfo : list) {
-            if ("#".equals(departmentInfo.getParentId())) {
-                List<DepartmentInfo> children = departmentDao.findByParentId(departmentInfo.getId());
-                departmentInfo.setChildren(children);
-                treeList.add(departmentInfo);
-            }
+            DepartmentTree departmentTree =
+                new DepartmentTree(departmentInfo.getId(), departmentInfo.getDepartmentName());
+            List<DepartmentTree> positionList = this.getPositionList(departmentInfo.getId());
+            departmentTree.setChildren(positionList);
+            treeList.add(departmentTree);
         }
-        return treeList;
+        //增加一个顶级分类，否则前端删除时出错
+        DepartmentTree parentTreeNode = new DepartmentTree();
+        parentTreeNode.setId("1111-1111-1111");
+        parentTreeNode.setTitle("所有部门");
+        parentTreeNode.setChildren(treeList);
+        return parentTreeNode;
+    }
+    
+    //获取指定部门下的所有岗位
+    private List<DepartmentTree> getPositionList(String id) {
+        List<DepartmentInfo> departmentPeople = departmentDao.findByParentId(id);
+        List<DepartmentTree> peopleList = new ArrayList<>();
+        for (DepartmentInfo departmentInfo : departmentPeople) {
+            DepartmentTree departmentTree =
+                new DepartmentTree(departmentInfo.getId(), departmentInfo.getJobPositionName());
+            peopleList.add(departmentTree);
+        }
+        return peopleList;
     }
     
     @Override
