@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zhou.organizationSystem.entity.DepartmentInfo;
+import com.zhou.organizationSystem.entity.DepartmentTree;
 import com.zhou.organizationSystem.service.IDepartmentService;
 import com.zhou.utils.common.model.Result;
 import com.zhou.utils.common.util.ResultUtil;
@@ -35,8 +36,8 @@ public class DepartmentController {
      */
     @RequestMapping("/getDepartmentTree")
     public Result getDepartmentTree() {
-        List<DepartmentInfo> treeList = departmentService.getDepartmentTree();
-        return ResultUtil.success(treeList);
+        DepartmentTree departmentTree = departmentService.getDepartmentTree();
+        return ResultUtil.success(departmentTree);
     }
     
     /**
