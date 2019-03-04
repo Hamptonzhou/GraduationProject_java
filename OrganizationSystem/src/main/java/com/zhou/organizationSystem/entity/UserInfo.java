@@ -14,6 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -125,7 +126,7 @@ public class UserInfo implements Serializable {
     /**
      * 入职时间.
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Column(name = "join_time")
     private Date joinTime;
     
@@ -133,6 +134,7 @@ public class UserInfo implements Serializable {
      * 人员的岗位.
      */
     @Column(name = "job_position", length = 100)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private String jobPosition;
     
     /**
