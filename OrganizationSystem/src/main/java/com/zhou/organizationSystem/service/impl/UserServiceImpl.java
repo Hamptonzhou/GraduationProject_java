@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zhou.organizationSystem.dao.IDepartmentDao;
 import com.zhou.organizationSystem.dao.IUserDao;
+import com.zhou.organizationSystem.entity.DepartmentInfo;
 import com.zhou.organizationSystem.entity.UserInfo;
 import com.zhou.organizationSystem.service.IUserService;
 import com.zhou.utils.PageQueryData;
@@ -25,6 +27,9 @@ public class UserServiceImpl implements IUserService {
     
     @Autowired
     private IUserDao userDao;
+    
+    @Autowired
+    private IDepartmentDao departmentDao;
     
     @Override
     public void getUserByQueryId(PageQueryData<UserInfo> pageQueryData) {
@@ -45,7 +50,16 @@ public class UserServiceImpl implements IUserService {
     // TODO 不允许为空的参数在前端校验，不允许重复的字段在后端校验，如登录名，另外写一个方法，用于校验字段是否重复
     @Override
     public UserInfo saveOrUpdateUser(UserInfo userInfo) {
-        UserInfo user = userDao.save(userInfo);
+        DepartmentInfo departmentInfo = departmentDao.findById(userInfo.getParentId()).orElse(null);
+        UserInfo user = null;
+        if (departmentInfo != null) {
+            if (departmentInfo.getDepartmentName() == null) {
+                userInfo.setJobPosition(departmentInfo.getJobPositionName());
+            } else {
+                userInfo.setJobPosition(departmentInfo.getDepartmentName());
+            }
+            user = userDao.save(userInfo);
+        }
         return user;
     }
     
