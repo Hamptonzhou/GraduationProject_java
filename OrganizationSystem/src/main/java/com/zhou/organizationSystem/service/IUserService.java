@@ -77,4 +77,22 @@ public interface IUserService {
      * @Description:用于登陆时获取信息验证
      */
     UserInfo getUserInfoByLoginName(String loginName);
+    
+    /**
+     * 修改用户状态：启用或禁用
+     * 
+     * @param userId
+     * @return
+     * @Description:
+     */
+    void enableChange(String userId);
+    
+    /**
+     * 获取指定的用户信息
+     * 
+     * @param userId
+     * @return
+     * @Description:
+     */
+    UserInfo loadOneUserById(String userId);
 }

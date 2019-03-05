@@ -97,4 +97,20 @@ public class UserServiceImpl implements IUserService {
     public UserInfo getUserInfoByLoginName(String loginName) {
         return userDao.findByLoginName(loginName);
     }
+    
+    @Override
+    public void enableChange(String userId) {
+        UserInfo userInfo = userDao.findById(userId).orElse(null);
+        if (userInfo != null) {
+            String change = userInfo.getEnable().equals("1") ? "0" : "1";
+            userInfo.setEnable(change);
+            userDao.save(userInfo);
+        }
+    }
+    
+    @Override
+    public UserInfo loadOneUserById(String userId) {
+        UserInfo userInfo = userDao.findById(userId).orElse(null);
+        return userInfo;
+    }
 }
