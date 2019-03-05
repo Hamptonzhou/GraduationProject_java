@@ -62,7 +62,11 @@ public class UserController {
     @RequestMapping("saveOrUpdateUser")
     public Result saveOrUpdateUser(UserInfo userInfo) {
         UserInfo user = userService.saveOrUpdateUser(userInfo);
-        return ResultUtil.success(user.getRealName());
+        if (user != null) {
+            return ResultUtil.success(user.getRealName());
+        } else {
+            return ResultUtil.fail();
+        }
     }
     
     /**
@@ -104,4 +108,31 @@ public class UserController {
         boolean isExist = userService.checkLoginNameExist(loginName);
         return ResultUtil.success(isExist);
     }
+    
+    /**
+     * 修改指定用户的状态，禁用或启用
+     * 
+     * @param userId
+     * @return
+     * @Description:
+     */
+    @RequestMapping("enableChange")
+    public Result enableChange(String userId) {
+        userService.enableChange(userId);
+        return ResultUtil.success();
+    }
+    
+    /**
+     * 获取指定用户的信息
+     * 
+     * @param userId
+     * @return
+     * @Description:
+     */
+    @RequestMapping("loadOneUserById")
+    public Result loadOneUserById(String userId) {
+        UserInfo userInfo = userService.loadOneUserById(userId);
+        return ResultUtil.success(userInfo);
+    }
+    
 }
