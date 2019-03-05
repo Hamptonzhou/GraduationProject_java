@@ -117,16 +117,21 @@ public class UserInfo implements Serializable {
     private String education;
     
     /**
+     * 总结： 注解@JsonFormat主要是后台到前台的时间格式的转换 ;注解@DataFormAT主要是前后到后台的时间格式的转换
+     * 
      * 注册时间.
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @Column(name = "register_time", length = 30)
     private Date registerTime;
     
     /**
      * 入职时间.
+     * 
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @Column(name = "join_time")
     private Date joinTime;
     
@@ -154,5 +159,11 @@ public class UserInfo implements Serializable {
      */
     @Column(name = "user_description", length = 300)
     private String userDescription;
+    
+    /**
+     * 头像的图床地址
+     */
+    @Column(name = "avatar", length = 100)
+    private String avatar;
     
 }
