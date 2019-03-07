@@ -1,5 +1,7 @@
 package com.zhou.workflowSystem.workflow.service;
 
+import java.util.List;
+
 import com.zhou.workflowSystem.workflow.entity.BusinessFormData;
 
 /**
@@ -20,5 +22,22 @@ public interface IFormService {
      * @Description:
      */
     void saveFormData(BusinessFormData businessFormData);
+    
+    /**
+     * 根据表单id获取表单实体对象
+     * 
+     * @param formDataId
+     * @return
+     * @Description:
+     */
+    BusinessFormData getFormDataById(Integer formDataId);
+    
+    /**
+     * 获取所有表单数据
+     * 
+     * @return
+     * @Description:
+     */
+    List<BusinessFormData> getAllFormData();
     
 }

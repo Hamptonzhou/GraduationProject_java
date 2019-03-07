@@ -35,4 +35,32 @@ public class FormController {
         formService.saveFormData(businessFormData);
         return ResultUtil.success();
     }
+    
+    /**
+     * 获取表单实体对象
+     * 
+     * @param FormDataId
+     * @return
+     * @Description:
+     */
+    @RequestMapping("getFormDataById")
+    public Result getFormDataById(Integer formDataId) {
+        BusinessFormData formData = formService.getFormDataById(formDataId);
+        if (formData != null) {
+            return ResultUtil.success(formData);
+        } else {
+            return ResultUtil.fail("表单不存在！");
+        }
+    }
+    
+    /**
+     * 获取所有表单实体对象
+     * 
+     * @return
+     * @Description:
+     */
+    @RequestMapping("getAllFormData")
+    public Result getAllFormData() {
+        return ResultUtil.success(formService.getAllFormData());
+    }
 }

@@ -1,5 +1,7 @@
 package com.zhou.workflowSystem.workflow.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,20 @@ public class FormServiceImpl implements IFormService {
     @Override
     public void saveFormData(BusinessFormData businessFormData) {
         formDao.save(businessFormData);
+    }
+    
+    @Override
+    public BusinessFormData getFormDataById(Integer formDataId) {
+        BusinessFormData formData = null;
+        if (formDataId != null) {
+            formData = formDao.findById(formDataId).orElse(null);
+        }
+        return formData;
+    }
+    
+    @Override
+    public List<BusinessFormData> getAllFormData() {
+        return formDao.findAll();
     }
     
 }
