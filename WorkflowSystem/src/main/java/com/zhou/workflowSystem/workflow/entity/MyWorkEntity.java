@@ -74,7 +74,7 @@ public class MyWorkEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date claimTime;
     
-    private String remarkContent;
+    private Object remarkContent;
     
     /**
      * 个人已办列表属性
