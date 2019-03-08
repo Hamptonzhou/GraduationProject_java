@@ -1,6 +1,5 @@
 package com.zhou.workflowSystem.workflow.service.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -125,6 +125,58 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
     }
     
     /**
+     * TODO 获取在办工作列表
+     * 
+     * @param pageQueryData
+     * @Description:
+     */
+    private void findHanglingWorkList(PageQueryData<MyWorkEntity> pageQueryData) {
+        String realName = pageQueryData.getQueryId();
+        List<MyWorkEntity> resultList = new ArrayList<MyWorkEntity>();
+        List<Task> tasks = new ArrayList<Task>();
+        // 根据当前人的ID查询
+        List<Task> todoList = taskService.createTaskQuery().taskAssignee(realName).list();
+        // 根据当前人未签收的任务
+        List<Task> unsignedTasks = taskService.createTaskQuery().taskCandidateUser(realName).list();
+        // 合并
+        tasks.addAll(todoList);
+        tasks.addAll(unsignedTasks);
+        // 根据流程的业务ID查询实体并关联
+        for (Task task : tasks) {
+            System.out.println(task.toString());
+            //业务情况从流程实例历史表中获取
+            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .singleResult();
+            //在办环节的开始时间、接办时间需要从历史task表中获取
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .taskDefinitionKey(task.getTaskDefinitionKey())
+                .singleResult();
+            MyWorkEntity myWorkEntity = new MyWorkEntity();
+            //设置备注信息流程变量到实体返回
+            myWorkEntity.setRemarkContent(taskService.getVariable(task.getId(), Const.RemarkContent.KEY));
+            myWorkEntity.setHanglingWorkAttributes(historicProcessInstance, historicTaskInstance);
+            //判断是个人任务还是组任务，显示在任务类型上
+            boolean isGroupTask =
+                historicTaskInstance.getAssignee() == null || historicTaskInstance.getClaimTime() != null;
+            if (isGroupTask) {
+                String variablesValue = (String)taskService.getVariables(task.getId()).get(Const.ClaimStatus.KEY);
+                if (variablesValue == null || Const.ClaimStatus.UNCLAIM.equals(variablesValue)) {
+                    myWorkEntity.setTaskType("组任务-" + Const.ClaimStatus.UNCLAIM);
+                } else {
+                    myWorkEntity.setTaskType("组任务-" + Const.ClaimStatus.CLAIMED);
+                }
+            } else {
+                myWorkEntity.setTaskType("个人任务");
+                myWorkEntity.setClaimTime(myWorkEntity.getTaskStartTime());
+            }
+            resultList.add(myWorkEntity);
+        }
+        pageQueryData.setQueryList(resultList);
+    }
+    
+    /**
      * TODO 获取个人已办理的工作列表
      * 
      * @param pageQueryData
@@ -151,6 +203,14 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
                     .taskDefinitionKey(task.getTaskDefinitionKey())
                     .singleResult();
                 MyWorkEntity myWorkEntity = new MyWorkEntity();
+                //设置备注信息流程变量到实体返回
+                HistoricVariableInstance historicVariableInstance = historyService.createHistoricVariableInstanceQuery()
+                    .processInstanceId(historicProcessInstance.getId())
+                    .variableName(Const.RemarkContent.KEY)
+                    .singleResult();
+                if (historicVariableInstance != null) {
+                    myWorkEntity.setRemarkContent(historicVariableInstance.getValue());
+                }
                 myWorkEntity.setPersonalDoneWorkAttributes(historicProcessInstance, historicTaskInstance);
                 resultList.add(myWorkEntity);
             }
@@ -182,62 +242,21 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
                 //该流程存在结束时间，说明该流程实例已经完全结束
                 if (historicProcessInstance.getEndTime() != null) {
                     MyWorkEntity myWorkEntity = new MyWorkEntity();
+                    //设置备注信息流程变量到实体返回
+                    HistoricVariableInstance historicVariableInstance =
+                        historyService.createHistoricVariableInstanceQuery()
+                            .processInstanceId(historicProcessInstance.getId())
+                            .variableName(Const.RemarkContent.KEY)
+                            .singleResult();
+                    if (historicVariableInstance != null) {
+                        myWorkEntity.setRemarkContent(historicVariableInstance.getValue());
+                    }
                     myWorkEntity.setFinishedWorkAttributes(historicProcessInstance);
                     resultList.add(myWorkEntity);
                 }
             }
             pageQueryData.setQueryList(resultList);
         }
-    }
-    
-    /**
-     * 获取在办工作列表
-     * 
-     * @param pageQueryData
-     * @Description:
-     */
-    private void findHanglingWorkList(PageQueryData<MyWorkEntity> pageQueryData) {
-        String realName = pageQueryData.getQueryId();
-        List<MyWorkEntity> resultList = new ArrayList<MyWorkEntity>();
-        List<Task> tasks = new ArrayList<Task>();
-        // 根据当前人的ID查询
-        List<Task> todoList = taskService.createTaskQuery().taskAssignee(realName).list();
-        // 根据当前人未签收的任务
-        List<Task> unsignedTasks = taskService.createTaskQuery().taskCandidateUser(realName).list();
-        // 合并
-        tasks.addAll(todoList);
-        tasks.addAll(unsignedTasks);
-        // 根据流程的业务ID查询实体并关联
-        for (Task task : tasks) {
-            System.out.println(task.toString());
-            //业务情况从流程实例历史表中获取
-            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(task.getProcessInstanceId())
-                .singleResult();
-            //在办环节的开始时间、接办时间需要从历史task表中获取
-            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(task.getProcessInstanceId())
-                .taskDefinitionKey(task.getTaskDefinitionKey())
-                .singleResult();
-            MyWorkEntity myWorkEntity = new MyWorkEntity();
-            myWorkEntity.setRemarkContent((String)taskService.getVariable(task.getId(), Const.RemarkContent.KEY));
-            myWorkEntity.setHanglingWorkAttributes(historicProcessInstance, historicTaskInstance);
-            boolean isGroupTask =
-                historicTaskInstance.getAssignee() == null || historicTaskInstance.getClaimTime() != null;
-            if (isGroupTask) {
-                String variablesValue = (String)taskService.getVariables(task.getId()).get(Const.ClaimStatus.KEY);
-                if (variablesValue == null || Const.ClaimStatus.UNCLAIM.equals(variablesValue)) {
-                    myWorkEntity.setTaskType("组任务-" + Const.ClaimStatus.UNCLAIM);
-                } else {
-                    myWorkEntity.setTaskType("组任务-" + Const.ClaimStatus.CLAIMED);
-                }
-            } else {
-                myWorkEntity.setTaskType("个人任务");
-                myWorkEntity.setClaimTime(myWorkEntity.getTaskStartTime());
-            }
-            resultList.add(myWorkEntity);
-        }
-        pageQueryData.setQueryList(resultList);
     }
     
     @Override
