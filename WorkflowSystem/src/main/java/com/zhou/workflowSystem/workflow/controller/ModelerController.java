@@ -250,8 +250,7 @@ public class ModelerController {
         JsonNode processId = modelNode.get("properties").get("process_id");
         //初次发布时，流程标识为""，为其赋值，往后发布，必须使用第一次赋予的值，否则为不同的流程定义，而不是版本升序
         if ("\"\"".equals(processId.toString())) {
-            ((ObjectNode)modelNode.get("properties")).put("process_id",
-                "_" + UUID.randomUUID().toString().substring(0, 5));
+            ((ObjectNode)modelNode.get("properties")).put("process_id", UUID.randomUUID().toString());
             repositoryService.addModelEditorSource(modelData.getId(), modelNode.toString().getBytes("utf-8"));
         }
         BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
