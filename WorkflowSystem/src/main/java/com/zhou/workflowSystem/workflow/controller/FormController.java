@@ -30,9 +30,9 @@ public class FormController {
      * @return
      * @Description:
      */
-    @RequestMapping("saveFormData")
-    public Result saveFormData(BusinessFormData businessFormData) {
-        formService.saveFormData(businessFormData);
+    @RequestMapping("saveOrUpdateFormData")
+    public Result saveOrUpdateFormData(BusinessFormData businessFormData) {
+        formService.saveOrUpdateFormData(businessFormData);
         return ResultUtil.success();
     }
     
