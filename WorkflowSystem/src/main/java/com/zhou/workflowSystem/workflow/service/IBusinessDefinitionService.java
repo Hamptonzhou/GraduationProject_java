@@ -35,6 +35,6 @@ public interface IBusinessDefinitionService {
      * @param ids
      * @Description:
      */
-    void deleteMaterialByIds(Integer[] ids);
+    void deleteBusinessDefinitionByIds(Integer[] ids);
     
 }

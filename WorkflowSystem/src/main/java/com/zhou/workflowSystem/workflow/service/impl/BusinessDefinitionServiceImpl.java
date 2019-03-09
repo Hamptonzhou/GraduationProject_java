@@ -39,7 +39,7 @@ public class BusinessDefinitionServiceImpl implements IBusinessDefinitionService
     }
     
     @Override
-    public void deleteMaterialByIds(Integer[] ids) {
+    public void deleteBusinessDefinitionByIds(Integer[] ids) {
         for (Integer id : ids) {
             BusinessDefinition businessDefinition = businessDefinitionDao.findById(id).orElse(null);
             if (businessDefinition != null) {
