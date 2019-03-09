@@ -36,7 +36,7 @@ public class BusinessFormData {
     private String formName;
     
     //保存该字段时。使用富文本过滤
-    @Column(name = "form_data", length = 4000)
+    @Column(name = "form_data")
     private String formData;
     
 }
