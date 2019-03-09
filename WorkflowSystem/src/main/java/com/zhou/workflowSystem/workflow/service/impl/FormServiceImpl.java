@@ -24,7 +24,7 @@ public class FormServiceImpl implements IFormService {
     private FormDao formDao;
     
     @Override
-    public void saveFormData(BusinessFormData businessFormData) {
+    public void saveOrUpdateFormData(BusinessFormData businessFormData) {
         formDao.save(businessFormData);
     }
     

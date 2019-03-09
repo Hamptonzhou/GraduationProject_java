@@ -21,7 +21,7 @@ public interface IFormService {
      * @param formData
      * @Description:
      */
-    void saveFormData(BusinessFormData businessFormData);
+    void saveOrUpdateFormData(BusinessFormData businessFormData);
     
     /**
      * 根据表单id获取表单实体对象
