@@ -59,7 +59,7 @@ public class BusinessDefinitionController {
      */
     @RequestMapping("deleteBusinessDefinitionByIds")
     public Result deleteBusinessDefinitionByIds(Integer[] ids) {
-        businessDefinitionService.deleteMaterialByIds(ids);
+        businessDefinitionService.deleteBusinessDefinitionByIds(ids);
         return ResultUtil.success();
     }
     
