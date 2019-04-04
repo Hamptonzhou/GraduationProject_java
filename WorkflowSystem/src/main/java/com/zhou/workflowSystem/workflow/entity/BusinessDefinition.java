@@ -1,5 +1,6 @@
 package com.zhou.workflowSystem.workflow.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,16 +21,21 @@ public class BusinessDefinition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
+    @Column(length = 50, nullable = false)
     private String businessName;
     
     //业务使用的流程
+    @Column(length = 50, nullable = false)
     private String processDefinitionId;
     
+    @Column(length = 50, nullable = false)
     private String processDefinitionName;
     
     //业务使用的表单
+    @Column(length = 50, nullable = false)
     private String businessFormId;
     
+    @Column(length = 50, nullable = false)
     private String businessFormName;
     
     //备注信息，启动之后获得流程实例进行设置
