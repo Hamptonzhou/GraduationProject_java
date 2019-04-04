@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zhou.utils.CheckUtil;
 import com.zhou.utils.PageQueryData;
 import com.zhou.workflowSystem.workflow.dao.BusinessDefinitionDao;
 import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
@@ -40,10 +41,12 @@ public class BusinessDefinitionServiceImpl implements IBusinessDefinitionService
     
     @Override
     public void deleteBusinessDefinitionByIds(Integer[] ids) {
-        for (Integer id : ids) {
-            BusinessDefinition businessDefinition = businessDefinitionDao.findById(id).orElse(null);
-            if (businessDefinition != null) {
-                businessDefinitionDao.deleteById(id);
+        if (ids != null) {
+            for (Integer id : ids) {
+                BusinessDefinition businessDefinition = businessDefinitionDao.findById(id).orElse(null);
+                if (businessDefinition != null) {
+                    businessDefinitionDao.deleteById(id);
+                }
             }
         }
     }
