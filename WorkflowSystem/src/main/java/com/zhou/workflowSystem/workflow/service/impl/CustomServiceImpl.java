@@ -18,6 +18,7 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
@@ -327,5 +328,19 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
             variables.put(Const.RemarkContent.KEY, remarkContent);
             taskService.setVariables(taskId, variables);
         }
+    }
+    
+    @Override
+    public String getBusinessFormId(String processInstanceId) {
+        HistoricProcessInstance historicProcessInstance =
+            historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+        return historicProcessInstance.getBusinessKey();
+    }
+    
+    @Override
+    public void startProcessDefinition(String processDefinitionId, String businessFormId, String remarkContent) {
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put(Const.RemarkContent.KEY, remarkContent);
+        runtimeService.startProcessInstanceById(processDefinitionId, businessFormId, variables);
     }
 }
