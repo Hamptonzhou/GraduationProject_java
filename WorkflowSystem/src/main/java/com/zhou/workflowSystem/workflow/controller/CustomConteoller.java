@@ -7,7 +7,10 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zhou.utils.PageQueryData;
 import com.zhou.workflowSystem.common.model.Result;
+import com.zhou.workflowSystem.common.util.ParamUtils;
 import com.zhou.workflowSystem.common.util.ResultUtil;
+import com.zhou.workflowSystem.workflow.entity.Leave;
 import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
 import com.zhou.workflowSystem.workflow.entity.ProcessDefinitionTree;
 import com.zhou.workflowSystem.workflow.service.ICustomService;
@@ -186,6 +191,34 @@ public class CustomConteoller {
             return ResultUtil.fail("taskID/remarkContent不能为空 ");
         }
         customService.setRemarkContent(taskId, remarkContent);
+        return ResultUtil.success();
+    }
+    
+    /**
+     * 根据流程实例id获取流程实例的Business_Key
+     * 
+     * @param processInstanceId
+     * @return
+     * @Description:
+     */
+    @RequestMapping(value = "getBusinessFormId")
+    public Result getBusinessFormId(String processInstanceId) {
+        String businessFormId = customService.getBusinessFormId(processInstanceId);
+        return ResultUtil.success(businessFormId);
+    }
+    
+    /**
+     * 根据流程定义Id,启动流程。同时将Business_Key字段与业务表单Id绑定
+     * 
+     * @param processDefinitionId
+     * @return
+     * @throws Exception
+     * @Description:
+     */
+    @RequestMapping(value = "startProcessDefinition", method = RequestMethod.POST)
+    public Result startProcessDefinition(String processDefinitionId, String businessFormId, String remarkContent)
+        throws Exception {
+        customService.startProcessDefinition(processDefinitionId, businessFormId, remarkContent);
         return ResultUtil.success();
     }
     
