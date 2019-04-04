@@ -34,7 +34,7 @@ public class BusinessDefinitionController {
     @RequestMapping("getBusinessDefinitionList")
     public Result getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData) {
         businessDefinitionService.getBusinessDefinitionList(pageQueryData);
-        return ResultUtil.success();
+        return ResultUtil.success(pageQueryData.getResult());
     }
     
     /**
