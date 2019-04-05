@@ -215,10 +215,10 @@ public class CustomConteoller {
      * @throws Exception
      * @Description:
      */
-    @RequestMapping(value = "startProcessDefinition", method = RequestMethod.POST)
-    public Result startProcessDefinition(String processDefinitionId, String businessFormId, String remarkContent)
+    @RequestMapping(value = "startProcessDefinition")
+    public Result startProcessDefinition(Integer businessId)
         throws Exception {
-        customService.startProcessDefinition(processDefinitionId, businessFormId, remarkContent);
+        customService.startProcessDefinition(businessId);
         return ResultUtil.success();
     }
     

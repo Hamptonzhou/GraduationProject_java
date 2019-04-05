@@ -2,8 +2,6 @@ package com.zhou.workflowSystem.workflow.service;
 
 import java.io.IOException;
 
-import org.activiti.engine.runtime.ProcessInstance;
-
 import com.zhou.utils.PageQueryData;
 import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
 import com.zhou.workflowSystem.workflow.entity.ProcessDefinitionTree;
@@ -87,11 +85,11 @@ public interface ICustomService<T> {
     /**
      * 根据流程定义Id,启动流程。同时将Business_Key字段与业务表单Id绑定
      * 
-     * @param processDefinitionId
+     * @param businessId
      * @return
      * @throws Exception
      * @Description:
      */
-    void startProcessDefinition(String processDefinitionId, String businessFormId, String remarkContent);
+    void startProcessDefinition(Integer businessId);
     
 }
