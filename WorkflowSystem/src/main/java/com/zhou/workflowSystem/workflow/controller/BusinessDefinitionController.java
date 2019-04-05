@@ -11,7 +11,6 @@ import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
 import com.zhou.workflowSystem.workflow.service.IBusinessDefinitionService;
 
 /**
- * 
  * @Title:
  * @Description:
  * @Author:zhou
@@ -21,13 +20,13 @@ import com.zhou.workflowSystem.workflow.service.IBusinessDefinitionService;
 @RestController
 @RequestMapping("BusinessDefinitionController")
 public class BusinessDefinitionController {
-    
+
     @Autowired
     private IBusinessDefinitionService businessDefinitionService;
-    
+
     /**
      * 获取业务定义列表
-     * 
+     *
      * @return
      * @Description:
      */
@@ -36,10 +35,10 @@ public class BusinessDefinitionController {
         businessDefinitionService.getBusinessDefinitionList(pageQueryData);
         return ResultUtil.success(pageQueryData.getResult());
     }
-    
+
     /**
      * 新增或修改记录
-     * 
+     *
      * @param material
      * @return
      * @Description:
@@ -49,10 +48,24 @@ public class BusinessDefinitionController {
         businessDefinitionService.saveOrUpdateBusinessDefinition(businessDefinition);
         return ResultUtil.success();
     }
-    
+
+    /**
+     * 设置业务定义中的备注信息
+     *
+     * @param businessId
+     * @param remarkContent
+     * @return
+     */
+    @RequestMapping("setBusinessDefRemark")
+
+    public Result setBusinessDefRemark(Integer businessId, String remarkContent) {
+        businessDefinitionService.setBusinessDefRemark(businessId, remarkContent);
+        return ResultUtil.success();
+    }
+
     /**
      * 删除一条或多条记录
-     * 
+     *
      * @param ids
      * @return
      * @Description:
@@ -62,5 +75,5 @@ public class BusinessDefinitionController {
         businessDefinitionService.deleteBusinessDefinitionByIds(ids);
         return ResultUtil.success();
     }
-    
+
 }
