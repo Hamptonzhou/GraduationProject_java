@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.zhou.utils.webservice.WebServiceUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -31,7 +32,8 @@ public class BusinessDefinitionServiceImpl implements IBusinessDefinitionService
 
     @Override
     public void getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData) {
-        List<BusinessDefinition> list = businessDefinitionDao.findAll();
+        String userId = WebServiceUtils.getCurrentUserId();
+        List<BusinessDefinition> list =  businessDefinitionDao.findByCreatorId(userId);
         pageQueryData.setTotal(list.size());
         pageQueryData.setQueryList(list);
     }

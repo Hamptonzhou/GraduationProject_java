@@ -5,8 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
 
+import java.util.List;
+
 /**
- * 
  * @Title:
  * @Description:
  * @Author:zhou
@@ -15,5 +16,6 @@ import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
  */
 @Repository
 public interface BusinessDefinitionDao extends JpaRepository<BusinessDefinition, Integer> {
-    
+
+    List<BusinessDefinition> findByCreatorId(String userId);
 }
