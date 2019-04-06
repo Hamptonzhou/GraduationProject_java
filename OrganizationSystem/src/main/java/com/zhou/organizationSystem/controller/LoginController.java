@@ -115,6 +115,9 @@ public class LoginController {
         if (CheckUtil.isNullorEmpty(userId)) {
             return ResultUtil.fail("登陆失效，请重新登陆");
         }
-        return ResultUtil.success();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("currentUserId",userId);
+        map.put("currentUserInfo",userService.loadOneUserById(userId));
+        return ResultUtil.success(map);
     }
 }
