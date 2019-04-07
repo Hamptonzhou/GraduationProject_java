@@ -3,6 +3,8 @@ package com.zhou.workflowSystem.workflow.service;
 import com.zhou.utils.PageQueryData;
 import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @Title:
  * @Description:
@@ -18,7 +20,7 @@ public interface IBusinessDefinitionService {
      * @param pageQueryData
      * @Description:
      */
-    void getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData);
+    void getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData, HttpServletRequest request);
 
     /**
      * 新增或修改记录
