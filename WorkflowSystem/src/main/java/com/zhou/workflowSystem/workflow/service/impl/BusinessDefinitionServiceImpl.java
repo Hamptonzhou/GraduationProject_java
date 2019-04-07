@@ -33,7 +33,7 @@ public class BusinessDefinitionServiceImpl implements IBusinessDefinitionService
     private BusinessDefinitionDao businessDefinitionDao;
 
     @Override
-    public void getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData, HttpServletRequest request) {
+    public void getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData) {
         String userId = pageQueryData.getQueryId();
         List<BusinessDefinition> list =  businessDefinitionDao.findByCreatorIdAndStarted(userId,false);
         pageQueryData.setTotal(list.size());

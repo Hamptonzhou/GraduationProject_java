@@ -20,7 +20,7 @@ public interface IBusinessDefinitionService {
      * @param pageQueryData
      * @Description:
      */
-    void getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData, HttpServletRequest request);
+    void getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData);
 
     /**
      * 新增或修改记录
