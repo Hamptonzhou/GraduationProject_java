@@ -17,5 +17,5 @@ import java.util.List;
 @Repository
 public interface BusinessDefinitionDao extends JpaRepository<BusinessDefinition, Integer> {
 
-    List<BusinessDefinition> findByCreatorId(String userId);
+    List<BusinessDefinition> findByCreatorIdAndStarted(String userId,boolean started);
 }
