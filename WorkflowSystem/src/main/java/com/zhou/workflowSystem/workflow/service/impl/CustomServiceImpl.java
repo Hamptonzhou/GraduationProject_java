@@ -347,6 +347,6 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         variables.put(Const.RemarkContent.KEY, businessDef.getRemarkContent());
         businessDef.setStarted(true);
         businessDefinitionDao.save(businessDef);
-//        runtimeService.startProcessInstanceById(businessDef.getProcessDefinitionId(), businessDef.getBusinessFormId(), variables);
+        runtimeService.startProcessInstanceById(businessDef.getProcessDefinitionId(), businessDef.getBusinessFormId(), variables);
     }
 }
