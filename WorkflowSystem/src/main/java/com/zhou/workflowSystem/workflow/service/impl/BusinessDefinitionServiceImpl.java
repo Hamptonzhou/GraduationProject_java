@@ -17,6 +17,8 @@ import com.zhou.workflowSystem.workflow.dao.BusinessDefinitionDao;
 import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
 import com.zhou.workflowSystem.workflow.service.IBusinessDefinitionService;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @Title:
  * @Description:
@@ -31,9 +33,9 @@ public class BusinessDefinitionServiceImpl implements IBusinessDefinitionService
     private BusinessDefinitionDao businessDefinitionDao;
 
     @Override
-    public void getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData) {
-        String userId = WebServiceUtils.getCurrentUserId();
-        List<BusinessDefinition> list =  businessDefinitionDao.findByCreatorId(userId);
+    public void getBusinessDefinitionList(PageQueryData<BusinessDefinition> pageQueryData, HttpServletRequest request) {
+        String userId = pageQueryData.getQueryId();
+        List<BusinessDefinition> list =  businessDefinitionDao.findByCreatorIdAndStarted(userId,false);
         pageQueryData.setTotal(list.size());
         pageQueryData.setQueryList(list);
     }
