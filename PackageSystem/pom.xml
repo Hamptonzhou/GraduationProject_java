@@ -12,7 +12,7 @@
 	<groupId>zhou</groupId>
 	<artifactId>PackageSystem</artifactId>
 	<version>1.0</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>PackageSystem</name>
 	<description>MyGraduationProject-PackageSystem</description>
 
