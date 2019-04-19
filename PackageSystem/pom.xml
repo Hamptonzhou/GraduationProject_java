@@ -36,11 +36,11 @@
 		</dependency>
 
  		<!-- 引用节假日模块 -->
-		<dependency>
-			<groupId>com.zhou</groupId>
-			<artifactId>HolidaySystem</artifactId>
-			<version>1.0</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.zhou</groupId> -->
+<!-- 			<artifactId>HolidaySystem</artifactId> -->
+<!-- 			<version>1.0</version> -->
+<!-- 		</dependency> -->
 
  		<!-- 引用消息模块 -->
 		<dependency>
