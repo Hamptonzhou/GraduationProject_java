@@ -68,6 +68,10 @@ public class LoginController {
             return ResultUtil.fail("密码不能为空");
         }
         UserInfo userInfo = userService.getUserInfoByLoginName(loginName);
+        boolean enable = userInfo.isEnable();
+        if (!enable) {
+            return ResultUtil.fail("该账号已被禁用，请联系管理员");
+        }
         
         if (!password.equals(userInfo.getUserPassword())) {
             return ResultUtil.fail("密码错误");
@@ -116,8 +120,8 @@ public class LoginController {
             return ResultUtil.fail("登陆失效，请重新登陆");
         }
         HashMap<String, Object> map = new HashMap<>();
-        map.put("currentUserId",userId);
-        map.put("currentUserInfo",userService.loadOneUserById(userId));
+        map.put("currentUserId", userId);
+        map.put("currentUserInfo", userService.loadOneUserById(userId));
         return ResultUtil.success(map);
     }
 }
