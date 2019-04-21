@@ -30,13 +30,15 @@ public class BusinessFormData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
     
     @Column(name = "form_name", length = 50)
     private String formName;
     
-    //保存该字段时。使用富文本过滤
     @Column(name = "form_data")
     private String formData;
+    
+    @Column(name = "form_data_values")
+    private String formDataValues;
     
 }
