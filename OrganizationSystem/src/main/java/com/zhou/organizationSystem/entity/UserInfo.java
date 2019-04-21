@@ -152,7 +152,7 @@ public class UserInfo implements Serializable {
      * 该账号是否可用
      */
     @Column(name = "is_enable", length = 1)
-    private String enable;
+    private boolean enable;
     
     /**
      * 人员描述

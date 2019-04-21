@@ -102,7 +102,7 @@ public class UserServiceImpl implements IUserService {
     public void enableChange(String userId) {
         UserInfo userInfo = userDao.findById(userId).orElse(null);
         if (userInfo != null) {
-            String change = userInfo.getEnable().equals("1") ? "0" : "1";
+            boolean change = userInfo.isEnable() == false ? true : false;
             userInfo.setEnable(change);
             userDao.save(userInfo);
         }
