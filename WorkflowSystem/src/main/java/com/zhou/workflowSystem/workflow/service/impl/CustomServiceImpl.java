@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.zhou.workflowSystem.workflow.dao.BusinessDefinitionDao;
-import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
@@ -27,9 +26,11 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zhou.utils.CheckUtil;
-import com.zhou.utils.PageQueryData;
 import com.zhou.workflowSystem.common.Const;
+import com.zhou.workflowSystem.common.util.CheckUtil;
+import com.zhou.workflowSystem.common.util.PageQueryData;
+import com.zhou.workflowSystem.workflow.dao.BusinessDefinitionDao;
+import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
 import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
 import com.zhou.workflowSystem.workflow.entity.ProcessDefinitionTree;
 import com.zhou.workflowSystem.workflow.service.ICustomService;
@@ -45,22 +46,22 @@ import com.zhou.workflowSystem.workflow.service.ICustomService;
 public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
     //@Autowired
     //private CustomDao customDao;
-
+    
     @Autowired
     private RepositoryService repositoryService;
-
+    
     @Autowired
     private TaskService taskService;
-
+    
     @Autowired
     private HistoryService historyService;
-
+    
     @Autowired
     private RuntimeService runtimeService;
-
+    
     @Autowired
     private BusinessDefinitionDao businessDefinitionDao;
-
+    
     @Override
     public ProcessDefinitionTree getProcessDefinitionTree() {
         List<Model> moduleList = repositoryService.createModelQuery().list();
@@ -84,7 +85,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         parentTreeNode.setChildren(treeList);
         return parentTreeNode;
     }
-
+    
     /**
      * 获取由指定模型发布的所有流程
      *
@@ -110,7 +111,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         }
         return treeChildren;
     }
-
+    
     @Override
     public void getMyWorkListBysearchText(PageQueryData<MyWorkEntity> pageQueryData) {
         switch (pageQueryData.getSearchText()) {
@@ -127,7 +128,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
                 break;
         }
     }
-
+    
     /**
      * TODO 获取在办工作列表
      *
@@ -165,7 +166,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
             boolean isGroupTask =
                 historicTaskInstance.getAssignee() == null || historicTaskInstance.getClaimTime() != null;
             if (isGroupTask) {
-                String variablesValue = (String) taskService.getVariables(task.getId()).get(Const.ClaimStatus.KEY);
+                String variablesValue = (String)taskService.getVariables(task.getId()).get(Const.ClaimStatus.KEY);
                 if (variablesValue == null || Const.ClaimStatus.UNCLAIM.equals(variablesValue)) {
                     myWorkEntity.setTaskType("组任务-" + Const.ClaimStatus.UNCLAIM);
                 } else {
@@ -179,7 +180,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         }
         pageQueryData.setQueryList(resultList);
     }
-
+    
     /**
      * TODO 获取个人已办理的工作列表
      *
@@ -191,7 +192,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         List<MyWorkEntity> resultList = new ArrayList<MyWorkEntity>();
         // 根据当前人的ID查询
         List<HistoricTaskInstance> PersonalDoneTaskList =
-                historyService.createHistoricTaskInstanceQuery().taskAssignee(realName).list();
+            historyService.createHistoricTaskInstanceQuery().taskAssignee(realName).list();
         // 根据流程的业务ID查询实体并关联
         for (HistoricTaskInstance task : PersonalDoneTaskList) {
             //没有结束时间表示该环节尚未办理完结，则不应该出现在个人已办理列表中
@@ -199,19 +200,19 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
                 System.out.println(task.toString());
                 //业务情况从流程实例历史表中获取
                 HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-                        .processInstanceId(task.getProcessInstanceId())
-                        .singleResult();
+                    .processInstanceId(task.getProcessInstanceId())
+                    .singleResult();
                 //环节信息从历史task表中获取，因为历史表记录的信息比较完善
                 HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
-                        .processInstanceId(task.getProcessInstanceId())
-                        .taskDefinitionKey(task.getTaskDefinitionKey())
-                        .singleResult();
+                    .processInstanceId(task.getProcessInstanceId())
+                    .taskDefinitionKey(task.getTaskDefinitionKey())
+                    .singleResult();
                 MyWorkEntity myWorkEntity = new MyWorkEntity();
                 //设置备注信息流程变量到实体返回
                 HistoricVariableInstance historicVariableInstance = historyService.createHistoricVariableInstanceQuery()
-                        .processInstanceId(historicProcessInstance.getId())
-                        .variableName(Const.RemarkContent.KEY)
-                        .singleResult();
+                    .processInstanceId(historicProcessInstance.getId())
+                    .variableName(Const.RemarkContent.KEY)
+                    .singleResult();
                 if (historicVariableInstance != null) {
                     myWorkEntity.setRemarkContent(historicVariableInstance.getValue());
                 }
@@ -221,7 +222,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         }
         pageQueryData.setQueryList(resultList);
     }
-
+    
     /**
      * TODO 获取办结工作列表
      *
@@ -233,7 +234,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         List<MyWorkEntity> resultList = new ArrayList<MyWorkEntity>();
         // 根据当前人的ID查询
         List<HistoricTaskInstance> PersonalDoneTaskList =
-                historyService.createHistoricTaskInstanceQuery().taskAssignee(realName).list();
+            historyService.createHistoricTaskInstanceQuery().taskAssignee(realName).list();
         // 根据流程的业务ID查询实体并关联
         for (HistoricTaskInstance task : PersonalDoneTaskList) {
             //某一个流程中，该用户办理的环节已经办理结束
@@ -241,17 +242,17 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
                 System.out.println(task.toString());
                 //业务情况从流程实例历史表中获取
                 HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-                        .processInstanceId(task.getProcessInstanceId())
-                        .singleResult();
+                    .processInstanceId(task.getProcessInstanceId())
+                    .singleResult();
                 //该流程存在结束时间，说明该流程实例已经完全结束
                 if (historicProcessInstance.getEndTime() != null) {
                     MyWorkEntity myWorkEntity = new MyWorkEntity();
                     //设置备注信息流程变量到实体返回
                     HistoricVariableInstance historicVariableInstance =
-                            historyService.createHistoricVariableInstanceQuery()
-                                    .processInstanceId(historicProcessInstance.getId())
-                                    .variableName(Const.RemarkContent.KEY)
-                                    .singleResult();
+                        historyService.createHistoricVariableInstanceQuery()
+                            .processInstanceId(historicProcessInstance.getId())
+                            .variableName(Const.RemarkContent.KEY)
+                            .singleResult();
                     if (historicVariableInstance != null) {
                         myWorkEntity.setRemarkContent(historicVariableInstance.getValue());
                     }
@@ -262,27 +263,34 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
             pageQueryData.setQueryList(resultList);
         }
     }
-
+    
     @Override
     public void getProcessStatusImage(PageQueryData<MyWorkEntity> pageQueryData)
-            throws IOException {
+        throws IOException {
         String processInstanceId = pageQueryData.getQueryId();
         ProcessInstance processInstance =
-                runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+            runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
         InputStream resource = null;
         //如果流程已经结束，则无法在runtimeService找到高亮显示的环节图。直接返回完整的流程图即可。
         if (processInstance == null) {
             String processDefinitionId = historyService.createHistoricProcessInstanceQuery()
-                    .processInstanceId(processInstanceId)
-                    .singleResult()
-                    .getProcessDefinitionId();
+                .processInstanceId(processInstanceId)
+                .singleResult()
+                .getProcessDefinitionId();
             resource = repositoryService.getProcessDiagram(processDefinitionId);
         } else {
             ProcessDefinition pde = repositoryService.getProcessDefinition(processInstance.getProcessDefinitionId());
             BpmnModel bpmnModel = repositoryService.getBpmnModel(pde.getId());
             DefaultProcessDiagramGenerator processDiagramGenerator = new DefaultProcessDiagramGenerator();
-            resource = processDiagramGenerator
-                    .generateDiagram(bpmnModel, "png", runtimeService.getActiveActivityIds(processInstance.getId()));
+            resource = processDiagramGenerator.generateDiagram(bpmnModel,
+                "png",
+                runtimeService.getActiveActivityIds(processInstance.getId()),
+                Collections.<String> emptyList(),
+                "宋体",
+                "宋体",
+                "宋体",
+                null,
+                1.0);
         }
         byte[] imageByte = IOUtils.toByteArray(resource);
         if (imageByte != null) {
@@ -302,7 +310,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         //            pageQueryData.setSearchTextMap(imgaeMap);
         //        }
     }
-
+    
     @Override
     public void claimTask(String taskId, String userId) {
         Map<String, String> variables = new HashMap<String, String>();
@@ -314,7 +322,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         taskService.setVariables(taskId, variables);
         taskService.claim(taskId, userId);
     }
-
+    
     @Override
     public void completeTask(String taskId) {
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
@@ -323,7 +331,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
             taskService.complete(taskId);
         }
     }
-
+    
     @Override
     public void setRemarkContent(String taskId, String remarkContent) {
         if (!CheckUtil.isNullorEmpty(remarkContent)) {
@@ -332,14 +340,14 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
             taskService.setVariables(taskId, variables);
         }
     }
-
+    
     @Override
     public String getBusinessFormId(String processInstanceId) {
         HistoricProcessInstance historicProcessInstance =
-                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+            historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
         return historicProcessInstance.getBusinessKey();
     }
-
+    
     @Override
     public void startProcessDefinition(Integer businessId) {
         BusinessDefinition businessDef = businessDefinitionDao.findById(businessId).orElse(null);
@@ -347,6 +355,7 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         variables.put(Const.RemarkContent.KEY, businessDef.getRemarkContent());
         businessDef.setStarted(true);
         businessDefinitionDao.save(businessDef);
-        runtimeService.startProcessInstanceById(businessDef.getProcessDefinitionId(), businessDef.getBusinessFormId(), variables);
+        runtimeService
+            .startProcessInstanceById(businessDef.getProcessDefinitionId(), businessDef.getBusinessFormId(), variables);
     }
 }

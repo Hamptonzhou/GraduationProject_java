@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zhou.utils.PageQueryData;
 import com.zhou.workflowSystem.common.model.Result;
+import com.zhou.workflowSystem.common.util.PageQueryData;
 import com.zhou.workflowSystem.common.util.ResultUtil;
 import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
 import com.zhou.workflowSystem.workflow.service.IBusinessDefinitionService;
