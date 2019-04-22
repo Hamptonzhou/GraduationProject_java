@@ -217,4 +217,9 @@ public class CustomConteoller {
         return ResultUtil.success();
     }
     
+    @RequestMapping(value = "getProcessDefinitionCount")
+    public Result getProcessDefinitionCount()
+        throws Exception {
+        return customService.getProcessDefinitionCount();
+    }
 }

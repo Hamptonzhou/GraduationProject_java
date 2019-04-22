@@ -2,6 +2,7 @@ package com.zhou.workflowSystem.workflow.service;
 
 import java.io.IOException;
 
+import com.zhou.workflowSystem.common.model.Result;
 import com.zhou.workflowSystem.common.util.PageQueryData;
 import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
 import com.zhou.workflowSystem.workflow.entity.ProcessDefinitionTree;
@@ -91,5 +92,7 @@ public interface ICustomService<T> {
      * @Description:
      */
     void startProcessDefinition(Integer businessId);
+
+    Result getProcessDefinitionCount();
     
 }

@@ -27,8 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zhou.workflowSystem.common.Const;
+import com.zhou.workflowSystem.common.model.Result;
 import com.zhou.workflowSystem.common.util.CheckUtil;
 import com.zhou.workflowSystem.common.util.PageQueryData;
+import com.zhou.workflowSystem.common.util.ResultUtil;
 import com.zhou.workflowSystem.workflow.dao.BusinessDefinitionDao;
 import com.zhou.workflowSystem.workflow.entity.BusinessDefinition;
 import com.zhou.workflowSystem.workflow.entity.MyWorkEntity;
@@ -357,5 +359,11 @@ public class CustomServiceImpl implements ICustomService<MyWorkEntity> {
         businessDefinitionDao.save(businessDef);
         runtimeService
             .startProcessInstanceById(businessDef.getProcessDefinitionId(), businessDef.getBusinessFormId(), variables);
+    }
+    
+    @Override
+    public Result getProcessDefinitionCount() {
+        long count = repositoryService.createProcessDefinitionQuery().count();
+        return ResultUtil.success(count);
     }
 }
